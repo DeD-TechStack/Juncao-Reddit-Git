@@ -1,26 +1,21 @@
 services:
   redis:
-    image: redis:7.4-alpine
+    image: redis:7-alpine
     container_name: trending-redis
     ports:
       - "6379:6379"
-    command: ["redis-server", "--appendonly", "yes"]
     volumes:
-      - redis_data:/data
+      - redis-data:/data
 
   trending-service:
     build: .
     container_name: trending-service
+    ports:
+      - "8083:8083"
     depends_on:
       - redis
-    ports:
-      - "8085:8085"
     environment:
-      SERVER_PORT: "8085"
-      SPRING_REDIS_HOST: redis
-      SPRING_REDIS_PORT: "6379"
-      SECURITY_JWT_SECRET_KEY: "3246918694727278232479912314703835454208642542872406260685881546"
-      SECURITY_JWT_ISSUER: "login-auth-api"
+      - SPRING_PROFILES_ACTIVE=docker
 
 volumes:
-  redis_data:
+  redis-data:

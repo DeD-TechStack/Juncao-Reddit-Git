@@ -26,17 +26,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = TrendingController.class)
-@AutoConfigureMockMvc(addFilters = false) // não aplica filtros no MockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class TrendingControllerTest {
 
     @Autowired
     MockMvc mvc;
 
-    // "moderno": substitui @MockBean
     @MockitoBean
     TrendingService trendingService;
 
-    // ISSO resolve seu erro: o SecurityFilter depende de TokenService no contexto
     @MockitoBean
     TokenService tokenService;
 

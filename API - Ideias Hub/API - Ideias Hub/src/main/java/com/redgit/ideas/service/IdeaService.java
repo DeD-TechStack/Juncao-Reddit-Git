@@ -5,10 +5,11 @@ import com.redgit.ideas.controller.dto.IdeaDTO;
 import com.redgit.ideas.infrastructure.entities.Idea;
 import com.redgit.ideas.infrastructure.repository.IdeaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +26,8 @@ public class IdeaService {
         return ideaRepository.save(idea);
     }
 
-    public List<Idea> getAllIdeas(){
-        return ideaRepository.findAll();
+    public Page<Idea> getAllIdeas(Pageable pageable) {
+        return ideaRepository.findAll(pageable);
     }
 
     public Idea findById(String id){
@@ -35,8 +36,8 @@ public class IdeaService {
         );
     }
 
-    public List<Idea> getIdeasByAuthor(String authorId){
-        return ideaRepository.findByAuthorId(authorId);
+    public Page<Idea> getIdeasByAuthor(String authorId, Pageable pageable) {
+        return ideaRepository.findByAuthorId(authorId, pageable);
     }
 
     public Idea replaceIdea(String id, IdeaDTO ideaDTO){

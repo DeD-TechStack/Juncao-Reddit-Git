@@ -6,6 +6,7 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.redgit.auth.infrastructure.entity.User;
 import com.redgit.auth.infrastructure.redis.RedisService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +28,12 @@ public class TokenService {
     private long tokenCacheTTL;
 
     private final RedisService redisService;
+
+    @PostConstruct
+    private void validateSecret() {
+        if (secret == null || secret.isBlank() || secret.length() < 32)
+            throw new IllegalStateException("JWT_SECRET não configurado ou inválido. Defina a variável de ambiente JWT_SECRET com no mínimo 32 caracteres.");
+    }
 
     public String generateToken(User user){
         try {

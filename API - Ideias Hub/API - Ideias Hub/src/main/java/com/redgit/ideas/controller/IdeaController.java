@@ -1,5 +1,6 @@
 package com.redgit.ideas.controller;
 
+import com.redgit.ideas.controller.dto.IdeaCreateDTO;
 import com.redgit.ideas.controller.dto.IdeaDTO;
 import com.redgit.ideas.infrastructure.entities.Idea;
 import com.redgit.ideas.service.IdeaService;
@@ -21,11 +22,10 @@ public class IdeaController {
 
     @PostMapping
     public ResponseEntity<Idea> createIdea(
-            @Validated @RequestBody IdeaDTO ideaDTO,
+            @Validated @RequestBody IdeaCreateDTO ideaCreateDTO,
             @AuthenticationPrincipal String userEmail) {
 
-        ideaDTO.setAuthorId(userEmail);
-        Idea created = ideaService.createIdea(ideaDTO);
+        Idea created = ideaService.createIdea(ideaCreateDTO, userEmail);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 

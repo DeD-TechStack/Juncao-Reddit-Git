@@ -7,7 +7,9 @@ import com.redgit.ideas.infrastructure.repository.IdeaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 
@@ -30,10 +32,10 @@ public class IdeaService {
         return ideaRepository.findAll(pageable);
     }
 
-    public Idea findById(String id){
-        return ideaRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("id não encontrado")
-        );
+    public Idea findById(String id) {
+        return ideaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Ideia não encontrada: " + id));
     }
 
     public Page<Idea> getIdeasByAuthor(String authorId, Pageable pageable) {

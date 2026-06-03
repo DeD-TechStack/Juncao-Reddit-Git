@@ -1,14 +1,20 @@
 package com.redgit.ideas.controller.dto;
 
-import lombok.Data;
+import com.redgit.ideas.validation.NoHtml;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
 
 @Data
 public class IdeaDTO {
-    @NotBlank(message = "Title is mandatory")
+    @NotBlank(message = "Título obrigatório")
+    @Size(max = 200, message = "Título deve ter no máximo 200 caracteres")
+    @NoHtml
     private String title;
 
-    @NotBlank(message = "Description is mandatory")
+    @NotBlank(message = "Descrição obrigatória")
+    @Size(max = 5000, message = "Descrição deve ter no máximo 5000 caracteres")
+    @NoHtml
     private String description;
 
     private String authorId;

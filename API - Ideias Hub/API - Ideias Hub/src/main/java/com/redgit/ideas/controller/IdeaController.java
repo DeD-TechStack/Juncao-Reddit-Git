@@ -5,13 +5,14 @@ import com.redgit.ideas.controller.dto.IdeaDTO;
 import com.redgit.ideas.infrastructure.entities.Idea;
 import com.redgit.ideas.service.IdeaService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/ideas")
@@ -30,8 +31,9 @@ public class IdeaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Idea>> getAllIdeas() {
-        return ResponseEntity.ok(ideaService.getAllIdeas());
+    public ResponseEntity<Page<Idea>> getAllIdeas(
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(ideaService.getAllIdeas(pageable));
     }
 
     @GetMapping("/{id}")
@@ -40,14 +42,17 @@ public class IdeaController {
     }
 
     @GetMapping("/my-ideas")
-    public ResponseEntity<List<Idea>> getMyIdeas(
-            @AuthenticationPrincipal String userEmail) {
-        return ResponseEntity.ok(ideaService.getIdeasByAuthor(userEmail));
+    public ResponseEntity<Page<Idea>> getMyIdeas(
+            @AuthenticationPrincipal String userEmail,
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(ideaService.getIdeasByAuthor(userEmail, pageable));
     }
 
     @GetMapping("/author/{authorId}")
-    public ResponseEntity<List<Idea>> getIdeasByAuthor(@PathVariable String authorId) {
-        return ResponseEntity.ok(ideaService.getIdeasByAuthor(authorId));
+    public ResponseEntity<Page<Idea>> getIdeasByAuthor(
+            @PathVariable String authorId,
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(ideaService.getIdeasByAuthor(authorId, pageable));
     }
 
     @PutMapping("/{id}")

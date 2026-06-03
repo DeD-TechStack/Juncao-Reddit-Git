@@ -6,5 +6,5 @@ spring.config.import=mongo.properties
 # Server
 server.port=8082
 
-# JWT
+# JWT — defina JWT_SECRET com no mínimo 32 caracteres
 security.jwt.secret-key=${JWT_SECRET}

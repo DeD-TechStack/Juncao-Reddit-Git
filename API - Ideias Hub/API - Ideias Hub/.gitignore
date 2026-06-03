@@ -33,9 +33,15 @@ mvnw.cmd
 
 # --- Configurações Locais e Segredos (CRÍTICO) ---
 .env
+src/main/resources/application.properties
 src/main/resources/mongo.properties
 *.properties.local
 *.log
+uploads/
+*.p12
+*.jks
+*.pem
+*.key
 
 # --- Sistema Operacional ---
 .DS_Store

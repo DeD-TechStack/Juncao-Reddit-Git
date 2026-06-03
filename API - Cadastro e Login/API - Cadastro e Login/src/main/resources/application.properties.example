@@ -6,9 +6,9 @@ spring.jpa.properties.hibernate.jdbc.time_zone=UTC
 spring.jpa.show-sql=true
 
 # Database
-spring.datasource.url=${DB_URL:jdbc:mysql://localhost:3306/mydatabase}
-spring.datasource.username=${DB_USERNAME:myuser}
-spring.datasource.password=${DB_PASSWORD:secret}
+spring.datasource.url=${DB_URL}
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 # Test
@@ -17,12 +17,12 @@ spring.test.database.replace=none
 # Server
 server.port=8081
 
-# Security
+# Security — defina JWT_SECRET com no mínimo 32 caracteres
 security.jwt.secret-key=${JWT_SECRET}
 
 # Redis Configuration
-spring.data.redis.host=${REDIS_HOST:localhost}
-spring.data.redis.port=${REDIS_PORT:6379}
-spring.data.redis.password=${REDIS_PASSWORD:}
-spring.data.redis.database=${REDIS_DB:0}
+spring.data.redis.host=${REDIS_HOST}
+spring.data.redis.port=${REDIS_PORT}
+spring.data.redis.password=${REDIS_PASSWORD}
+spring.data.redis.database=${REDIS_DB}
 spring.data.redis.timeout=60000

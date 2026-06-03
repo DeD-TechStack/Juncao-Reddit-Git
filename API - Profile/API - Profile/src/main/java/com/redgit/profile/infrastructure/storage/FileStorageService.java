@@ -43,14 +43,15 @@ public class FileStorageService {
         String newFilename = UUID.randomUUID().toString() + "." + extension;
 
         try {
-            if (newFilename.contains("..")) {
+            Path targetLocation = this.uploadPath.resolve(newFilename).normalize();
+
+            if (!targetLocation.startsWith(this.uploadPath)) {
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
-                        "Filename inválido: " + newFilename
+                        "Caminho de arquivo inválido"
                 );
             }
 
-            Path targetLocation = this.uploadPath.resolve(newFilename);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
             return newFilename;
@@ -58,7 +59,7 @@ public class FileStorageService {
         } catch (IOException e) {
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Erro ao armazenar arquivo: " + newFilename
+                    "Erro ao armazenar arquivo"
             );
         }
     }
@@ -66,33 +67,38 @@ public class FileStorageService {
     public Resource loadFileAsResource(String filename) {
         try {
             Path filePath = this.uploadPath.resolve(filename).normalize();
+
+            if (!filePath.startsWith(this.uploadPath)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Caminho de arquivo inválido");
+            }
+
             Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists() && resource.isReadable()) {
                 return resource;
             } else {
-                throw new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Arquivo não encontrado: " + filename
-                );
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Arquivo não encontrado");
             }
+        } catch (ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Arquivo não encontrado: " + filename
-            );
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Arquivo não encontrado");
         }
     }
 
     public void deleteFile(String filename) {
         try {
             Path filePath = this.uploadPath.resolve(filename).normalize();
+
+            if (!filePath.startsWith(this.uploadPath)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Caminho de arquivo inválido");
+            }
+
             Files.deleteIfExists(filePath);
+        } catch (ResponseStatusException e) {
+            throw e;
         } catch (IOException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Erro ao deletar arquivo: " + filename
-            );
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao deletar arquivo");
         }
     }
 

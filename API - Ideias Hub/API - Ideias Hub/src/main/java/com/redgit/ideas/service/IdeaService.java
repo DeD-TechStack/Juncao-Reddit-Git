@@ -1,5 +1,6 @@
 package com.redgit.ideas.service;
 
+import com.redgit.ideas.controller.dto.IdeaCreateDTO;
 import com.redgit.ideas.controller.dto.IdeaDTO;
 import com.redgit.ideas.infrastructure.entities.Idea;
 import com.redgit.ideas.infrastructure.repository.IdeaRepository;
@@ -15,11 +16,11 @@ public class IdeaService {
 
     private final IdeaRepository ideaRepository;
 
-    public Idea createIdea(IdeaDTO ideaDTO){
+    public Idea createIdea(IdeaCreateDTO dto, String authorEmail) {
         Idea idea = new Idea();
-        idea.setTitle(ideaDTO.getTitle());
-        idea.setDescription(ideaDTO.getDescription());
-        idea.setAuthorId(ideaDTO.getAuthorId());
+        idea.setTitle(dto.title());
+        idea.setDescription(dto.description());
+        idea.setAuthorId(authorEmail);
         idea.setCreatedAt(LocalDateTime.now());
         return ideaRepository.save(idea);
     }

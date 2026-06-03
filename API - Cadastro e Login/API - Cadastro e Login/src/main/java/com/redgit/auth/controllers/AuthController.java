@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -116,6 +117,7 @@ public class AuthController {
     }
 
     @PostMapping("/register/admin")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResponseDTO> registerAdmin(@RequestBody @Valid RegisterRequestDTO body){
         Optional<User> existingUser = this.repository.findByEmail(body.email());
 

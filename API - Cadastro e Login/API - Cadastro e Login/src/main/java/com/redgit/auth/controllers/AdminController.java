@@ -9,13 +9,17 @@ import com.redgit.auth.service.UserService;
 import com.redgit.auth.infrastructure.entity.UserRole;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -26,8 +30,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AdminController {
 
+    private static final Logger audit = LoggerFactory.getLogger("AUDIT");
+
     private final UserService userService;
-    private final RateLimitService rateLimitService; // ⭐ NOVO
+    private final RateLimitService rateLimitService;
 
     @GetMapping("/users")
     public ResponseEntity<Page<UserDTO>> getAllUsers(
@@ -45,38 +51,55 @@ public class AdminController {
     @PutMapping("/users/{id}/role")
     public ResponseEntity<UserDTO> changeUserRole(
             @PathVariable UUID id,
-            @RequestBody @Valid ChangeRoleDTO dto) {
+            @RequestBody @Valid ChangeRoleDTO dto,
+            @AuthenticationPrincipal String adminEmail) {
         User user = userService.changeRole(id, dto.getRole());
+        audit.info("[AUDIT] CHANGE_ROLE | executadoPor={} | alvo={} | novaRole={} | ts={}", adminEmail, id, dto.getRole(), Instant.now());
         return ResponseEntity.ok(new UserDTO(user));
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteUser(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal String adminEmail) {
         userService.delete(id);
+        audit.info("[AUDIT] DELETE_USER | executadoPor={} | alvo={} | ts={}", adminEmail, id, Instant.now());
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/users/{id}/lock")
-    public ResponseEntity<Void> lockUser(@PathVariable UUID id) {
+    public ResponseEntity<Void> lockUser(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal String adminEmail) {
         userService.lockAccount(id);
+        audit.info("[AUDIT] LOCK_USER | executadoPor={} | alvo={} | ts={}", adminEmail, id, Instant.now());
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/users/{id}/unlock")
-    public ResponseEntity<Void> unlockUser(@PathVariable UUID id) {
+    public ResponseEntity<Void> unlockUser(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal String adminEmail) {
         userService.unlockAccount(id);
+        audit.info("[AUDIT] UNLOCK_USER | executadoPor={} | alvo={} | ts={}", adminEmail, id, Instant.now());
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/users/{id}/disable")
-    public ResponseEntity<Void> disableUser(@PathVariable UUID id) {
+    public ResponseEntity<Void> disableUser(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal String adminEmail) {
         userService.disableAccount(id);
+        audit.info("[AUDIT] DISABLE_USER | executadoPor={} | alvo={} | ts={}", adminEmail, id, Instant.now());
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/users/{id}/enable")
-    public ResponseEntity<Void> enableUser(@PathVariable UUID id) {
+    public ResponseEntity<Void> enableUser(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal String adminEmail) {
         userService.enableAccount(id);
+        audit.info("[AUDIT] ENABLE_USER | executadoPor={} | alvo={} | ts={}", adminEmail, id, Instant.now());
         return ResponseEntity.noContent().build();
     }
 

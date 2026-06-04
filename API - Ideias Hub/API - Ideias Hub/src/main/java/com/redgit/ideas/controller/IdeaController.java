@@ -5,6 +5,8 @@ import com.redgit.ideas.controller.dto.IdeaDTO;
 import com.redgit.ideas.infrastructure.entities.Idea;
 import com.redgit.ideas.service.IdeaService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -14,10 +16,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+
 @RestController
 @RequestMapping("/api/ideas")
 @RequiredArgsConstructor
 public class IdeaController {
+
+    private static final Logger audit = LoggerFactory.getLogger("AUDIT");
 
     private final IdeaService ideaService;
 
@@ -96,6 +102,7 @@ public class IdeaController {
         }
 
         ideaService.deleteIdeaById(id);
+        audit.info("[AUDIT] DELETE_IDEA | executadoPor={} | ideaId={} | ts={}", userEmail, id, Instant.now());
         return ResponseEntity.noContent().build();
     }
 }

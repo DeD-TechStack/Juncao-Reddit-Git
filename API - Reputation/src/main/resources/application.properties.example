@@ -1,0 +1,16 @@
+server.port=8084
+spring.application.name=reputation-service
+
+# Security — defina SECURITY_JWT_SECRET_KEY com no mínimo 32 caracteres
+security.jwt.secret-key=${SECURITY_JWT_SECRET_KEY}
+
+# Database
+spring.datasource.url=${DB_URL}
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+
+spring.profiles.active=local

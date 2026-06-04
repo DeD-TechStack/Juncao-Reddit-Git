@@ -11,6 +11,10 @@ import com.redgit.profile.service.ProfileService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.time.Instant;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,6 +31,8 @@ import java.util.UUID;
 @RequestMapping("/api/profiles")
 @RequiredArgsConstructor
 public class ProfileController {
+
+    private static final Logger audit = LoggerFactory.getLogger("AUDIT");
 
     private final ProfileService profileService;
     private final FileStorageService fileStorageService;
@@ -85,6 +91,7 @@ public class ProfileController {
         UUID userId = user.getId();
 
         Profile updated = profileService.uploadAvatar(userId, file);
+        audit.info("[AUDIT] UPLOAD_AVATAR | executadoPor={} | ts={}", userEmail, Instant.now());
         String baseUrl = getBaseUrl(request);
 
         return ResponseEntity.ok(new ProfileDTO(updated, baseUrl));
@@ -102,6 +109,7 @@ public class ProfileController {
         UUID userId = user.getId();
 
         profileService.deleteAvatar(userId);
+        audit.info("[AUDIT] DELETE_AVATAR | executadoPor={} | ts={}", userEmail, Instant.now());
 
         return ResponseEntity.noContent().build();
     }

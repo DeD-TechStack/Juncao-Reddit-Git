@@ -1,0 +1,39 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: reputation-mysql
+    environment:
+      MYSQL_DATABASE: reputation_db
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - reputation_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  reputation-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: reputation-service
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/reputation_db
+      SPRING_DATASOURCE_USERNAME: myuser
+      SPRING_DATASOURCE_PASSWORD: secret
+      SECURITY_JWT_SECRET_KEY: "3246918694727278232479912314703835454208642542872406260685881546"
+
+    ports:
+      - "8084:8084"
+
+volumes:
+  reputation_mysql_data:

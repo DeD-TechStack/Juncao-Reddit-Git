@@ -28,7 +28,7 @@ public class ServiceTokenFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
 
-        if (request.getRequestURI().startsWith("/reputation/events")) {
+        if ("/reputation/events".equals(request.getRequestURI()) && "POST".equalsIgnoreCase(request.getMethod())) {
             String token = request.getHeader("X-Service-Token");
             if (token == null || !serviceSecret.equals(token)) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Service token inválido ou ausente");

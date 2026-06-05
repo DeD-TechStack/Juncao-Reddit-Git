@@ -13,9 +13,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final SecurityFilter securityFilter;
+    private final ServiceTokenFilter serviceTokenFilter;
 
-    public SecurityConfig(SecurityFilter securityFilter) {
+    public SecurityConfig(SecurityFilter securityFilter, ServiceTokenFilter serviceTokenFilter) {
         this.securityFilter = securityFilter;
+        this.serviceTokenFilter = serviceTokenFilter;
     }
 
     @Bean
@@ -30,6 +32,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/reputation/events/**").authenticated()
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(serviceTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

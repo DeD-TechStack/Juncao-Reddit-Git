@@ -22,9 +22,9 @@ public class ReputationService {
 
     @Transactional
     @Retryable(retryFor = OptimisticLockException.class, maxAttempts = 3)
-    public ReputationEventResponseDTO applyEvent(String userEmail, ReputationEventType type) {
-        UserReputation rep = repo.findByUserEmail(userEmail)
-                .orElseGet(() -> repo.save(new UserReputation(userEmail)));
+    public ReputationEventResponseDTO applyEvent(String userId, ReputationEventType type) {
+        UserReputation rep = repo.findByUserId(userId)
+                .orElseGet(() -> repo.save(new UserReputation(userId)));
 
         long gained = gainedXp(type);
         long newXp = rep.getXp() + gained;
@@ -43,11 +43,11 @@ public class ReputationService {
     }
 
     @Transactional(readOnly = true)
-    public ReputationResponseDTO me(String userEmail) {
-        UserReputation rep = repo.findByUserEmail(userEmail)
-                .orElse(new UserReputation(userEmail));
+    public ReputationResponseDTO me(String userId) {
+        UserReputation rep = repo.findByUserId(userId)
+                .orElse(new UserReputation(userId));
 
-        return new ReputationResponseDTO(rep.getUserEmail(), rep.getXp(), rep.getLevel(), rep.getTitle());
+        return new ReputationResponseDTO(rep.getUserId(), rep.getXp(), rep.getLevel(), rep.getTitle());
     }
 
     private long gainedXp(ReputationEventType type) {

@@ -1,6 +1,7 @@
 package com.daniel.registry.reputation.infrastructure.entity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Version;
 
 @Entity
 @Table(
@@ -12,6 +13,9 @@ public class UserReputation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Version
+    private Long version;
 
     @Column(nullable = false, unique = true)
     private String userEmail;

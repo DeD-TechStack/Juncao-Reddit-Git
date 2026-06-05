@@ -1,7 +1,7 @@
 package com.daniel.registry.reputation.dto;
 
 public record ReputationResponseDTO(
-        String userEmail,
+        String userId,
         long xp,
         int level,
         String title

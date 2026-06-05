@@ -5,8 +5,11 @@ import com.daniel.registry.reputation.dto.ReputationResponseDTO;
 import com.daniel.registry.reputation.infrastructure.entity.ReputationEventType;
 import com.daniel.registry.reputation.infrastructure.entity.UserReputation;
 import com.daniel.registry.reputation.infrastructure.repository.UserReputationRepository;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.persistence.OptimisticLockException;
 
 @Service
 public class ReputationService {
@@ -18,6 +21,7 @@ public class ReputationService {
     }
 
     @Transactional
+    @Retryable(retryFor = OptimisticLockException.class, maxAttempts = 3)
     public ReputationEventResponseDTO applyEvent(String userEmail, ReputationEventType type) {
         UserReputation rep = repo.findByUserEmail(userEmail)
                 .orElseGet(() -> repo.save(new UserReputation(userEmail)));

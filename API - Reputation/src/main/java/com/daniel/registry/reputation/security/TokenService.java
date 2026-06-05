@@ -19,13 +19,17 @@ public class TokenService {
             throw new IllegalStateException("SECURITY_JWT_SECRET_KEY não configurado ou inválido. Defina a variável de ambiente com no mínimo 32 caracteres.");
     }
 
+    /**
+     * Valida o token e retorna o userId (claim "userId").
+     * Retorna null se o token for inválido ou o claim ausente.
+     */
     public String validateToken(String token) {
         try {
-            return JWT.require(Algorithm.HMAC256(secret))
+            var decoded = JWT.require(Algorithm.HMAC256(secret))
                     .withIssuer("login-auth-api")
                     .build()
-                    .verify(token)
-                    .getSubject(); // email
+                    .verify(token);
+            return decoded.getClaim("userId").asString();
         } catch (JWTVerificationException e) {
             return null;
         }

@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/reputation/me").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/reputation/events/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/reputation/events").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(serviceTokenFilter, UsernamePasswordAuthenticationFilter.class)

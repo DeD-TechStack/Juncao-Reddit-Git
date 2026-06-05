@@ -6,7 +6,7 @@ import jakarta.persistence.Version;
 @Entity
 @Table(
         name = "user_reputation",
-        indexes = @Index(name = "idx_user_reputation_email", columnList = "userEmail", unique = true)
+        indexes = @Index(name = "idx_user_reputation_userid", columnList = "userId", unique = true)
 )
 public class UserReputation {
 
@@ -18,7 +18,7 @@ public class UserReputation {
     private Long version;
 
     @Column(nullable = false, unique = true)
-    private String userEmail;
+    private String userId;
 
     @Column(nullable = false)
     private long xp;
@@ -33,15 +33,15 @@ public class UserReputation {
         // JPA
     }
 
-    public UserReputation(String userEmail) {
-        this.userEmail = userEmail;
+    public UserReputation(String userId) {
+        this.userId = userId;
         this.xp = 0;
         this.level = 1;
         this.title = "Inovador Iniciante";
     }
 
     public Long getId() { return id; }
-    public String getUserEmail() { return userEmail; }
+    public String getUserId() { return userId; }
     public long getXp() { return xp; }
     public int getLevel() { return level; }
     public String getTitle() { return title; }

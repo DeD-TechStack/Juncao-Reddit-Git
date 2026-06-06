@@ -1,0 +1,10 @@
+server.port=8083
+spring.application.name=trending-service
+
+spring.data.redis.host=localhost
+spring.data.redis.port=6379
+
+# Security — defina SECURITY_JWT_SECRET_KEY com no mínimo 32 caracteres
+security.jwt.secret-key=${SECURITY_JWT_SECRET_KEY}
+
+spring.profiles.active=local

@@ -34,6 +34,9 @@ public class TrendingService {
     }
 
     public void bumpScore(long ideaId, double delta) {
+        if (delta <= 0) {
+            throw new IllegalArgumentException("O delta deve ser maior que zero");
+        }
         LocalDate today = LocalDate.now(TrendingKeys.zone());
         String member = String.valueOf(ideaId);
 

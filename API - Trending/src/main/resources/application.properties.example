@@ -7,4 +7,7 @@ spring.data.redis.port=6379
 # Security — defina SECURITY_JWT_SECRET_KEY com no mínimo 32 caracteres
 security.jwt.secret-key=${SECURITY_JWT_SECRET_KEY}
 
+# Service-to-service token — defina INTERNAL_SERVICE_SECRET com no mínimo 32 caracteres
+internal.service.secret=${INTERNAL_SERVICE_SECRET}
+
 spring.profiles.active=local

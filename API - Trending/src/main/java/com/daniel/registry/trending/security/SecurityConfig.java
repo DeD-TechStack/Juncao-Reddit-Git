@@ -12,9 +12,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final SecurityFilter filter;
+    private final ServiceTokenFilter serviceTokenFilter;
 
-    public SecurityConfig(SecurityFilter filter) {
+    public SecurityConfig(SecurityFilter filter, ServiceTokenFilter serviceTokenFilter) {
         this.filter = filter;
+        this.serviceTokenFilter = serviceTokenFilter;
     }
 
     @Bean
@@ -23,10 +25,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/trending/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/trending/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/trending/ideas/*/like").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/trending/ideas/*/score").permitAll()
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(serviceTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

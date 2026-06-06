@@ -1,0 +1,21 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: trending-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  trending-service:
+    build: .
+    container_name: trending-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - redis
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+volumes:
+  redis-data:

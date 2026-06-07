@@ -1,6 +1,6 @@
 package com.daniel.registry.trending.controller;
 
-import com.daniel.registry.trending.dto.TrendingItemDTO;
+import com.daniel.registry.trending.dto.TrendingResponseDTO;
 import com.daniel.registry.trending.service.TrendingService;
 import com.daniel.registry.trending.util.TrendingKeys;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/trending")
@@ -33,7 +32,7 @@ public class TrendingController {
     }
 
     @GetMapping("/daily")
-    public List<TrendingItemDTO> daily(
+    public TrendingResponseDTO daily(
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate date,
@@ -44,7 +43,7 @@ public class TrendingController {
     }
 
     @GetMapping("/weekly")
-    public List<TrendingItemDTO> weekly(
+    public TrendingResponseDTO weekly(
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate date,

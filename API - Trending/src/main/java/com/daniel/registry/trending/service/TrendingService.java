@@ -1,6 +1,7 @@
 package com.daniel.registry.trending.service;
 
 import com.daniel.registry.trending.dto.TrendingItemDTO;
+import com.daniel.registry.trending.dto.TrendingResponseDTO;
 import com.daniel.registry.trending.util.TrendingKeys;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -50,12 +51,14 @@ public class TrendingService {
         ensureTtl(weekKey, WEEKLY_TTL);
     }
 
-    public List<TrendingItemDTO> topDaily(LocalDate date, int limit) {
-        return top(TrendingKeys.daily(date), limit);
+    public TrendingResponseDTO topDaily(LocalDate date, int limit) {
+        String key = TrendingKeys.daily(date);
+        return new TrendingResponseDTO("daily", key, top(key, limit));
     }
 
-    public List<TrendingItemDTO> topWeekly(LocalDate anyDateInWeek, int limit) {
-        return top(TrendingKeys.weekly(anyDateInWeek), limit);
+    public TrendingResponseDTO topWeekly(LocalDate anyDateInWeek, int limit) {
+        String key = TrendingKeys.weekly(anyDateInWeek);
+        return new TrendingResponseDTO("weekly", key, top(key, limit));
     }
 
     private List<TrendingItemDTO> top(String key, int limit) {

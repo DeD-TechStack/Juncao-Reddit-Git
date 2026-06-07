@@ -2,13 +2,14 @@ package com.daniel.registry.trending.util;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
-import java.util.Locale;
 
 public final class TrendingKeys {
 
     private static final DateTimeFormatter DAY_FMT = DateTimeFormatter.BASIC_ISO_DATE; // yyyyMMdd
+    private static final WeekFields WEEK_FIELDS = WeekFields.ISO;
 
     private TrendingKeys() {}
 
@@ -17,14 +18,12 @@ public final class TrendingKeys {
     }
 
     public static String weekly(LocalDate date) {
-        WeekFields wf = WeekFields.of(Locale.getDefault());
-        int week = date.get(wf.weekOfWeekBasedYear());
-        int weekYear = date.get(wf.weekBasedYear());
+        int week = date.get(WEEK_FIELDS.weekOfWeekBasedYear());
+        int weekYear = date.get(WEEK_FIELDS.weekBasedYear());
         return String.format("trending:ideas:week:%dW%02d", weekYear, week);
     }
 
     public static ZoneId zone() {
-        // Se quiser travar em um timezone específico, altere aqui.
-        return ZoneId.systemDefault();
+        return ZoneOffset.UTC;
     }
 }

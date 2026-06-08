@@ -1,0 +1,384 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+/* Tailwind v4 */
+@import "tailwindcss";
+
+/* =========================
+   TOKENS (cores do Figma)
+========================= */
+:root {
+  --bg: #0b0f1a;
+  --fg: #e8eefc;
+
+  --muted: rgba(232, 238, 252, 0.70);
+
+  --border: rgba(255, 255, 255, 0.10);
+  --surface: rgba(255, 255, 255, 0.04);
+  --card: rgba(255, 255, 255, 0.06);
+
+  --ring: rgba(59, 130, 246, 0.45);
+
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+
+  --secondary: rgba(139, 92, 246, 0.22);
+  --secondary-hover: rgba(139, 92, 246, 0.30);
+
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+
+  --radius: 14px;
+}
+
+/* =========================
+   BASE
+========================= */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  margin: 0;
+}
+
+/* =========================
+   CONTAINERS
+========================= */
+.container-app {
+  width: 100%;
+  max-width: 72rem; /* ~ max-w-6xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* =========================
+   PAGE HELPERS
+========================= */
+.page,
+.app-page {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* Fundo “figma feel” */
+.page-bg,
+.app-page-bg {
+  background:
+    radial-gradient(900px 420px at 15% 10%, rgba(139, 92, 246, 0.25), transparent 55%),
+    radial-gradient(900px 420px at 85% 0%, rgba(59, 130, 246, 0.22), transparent 55%),
+    linear-gradient(180deg, rgba(255,255,255,0.02), transparent 40%),
+    var(--bg);
+}
+
+/* =========================
+   LANDING / AUTH (CLARO)
+========================= */
+.card-soft {
+  background: rgba(255, 255, 255, 0.92);
+  color: #0b0f1a;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.08);
+}
+
+/* =========================
+   UI DARK (APP)
+========================= */
+
+/* Superfície base */
+.ui-surface {
+  background: var(--surface);
+  color: var(--fg);
+}
+
+/* Card dark */
+.ui-card {
+  background: var(--card);
+  color: var(--fg);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.20);
+}
+
+/* Bordas */
+.ui-border {
+  border: 1px solid var(--border);
+}
+
+/* Texto */
+.text-muted,
+.ui-muted {
+  color: var(--muted);
+}
+
+.text-strong {
+  color: var(--fg);
+}
+
+/* =========================
+   FOCUS / RING
+========================= */
+.ui-focus-ring:focus-visible,
+.ui-input:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+/* =========================
+   INPUTS
+========================= */
+.ui-input {
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.btn {
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition:
+    background .15s ease,
+    color .15s ease,
+    border-color .15s ease,
+    transform .05s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* Primary */
+.btn-primary {
+  background: var(--primary);
+  color: #ffffff;
+}
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+/* Secondary */
+.btn-secondary {
+  background: var(--secondary);
+  color: var(--fg);
+}
+.btn-secondary:hover {
+  background: var(--secondary-hover);
+}
+
+/* Outline */
+.btn-outline {
+  background: transparent;
+  color: var(--fg);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Destructive */
+.btn-destructive {
+  background: var(--danger);
+  color: #ffffff;
+}
+.btn-destructive:hover {
+  background: var(--danger-hover);
+}
+
+/* =========================
+   BADGES
+========================= */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.badge-primary {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.badge-secondary {
+  background: var(--secondary);
+  color: var(--fg);
+}
+
+.badge-outline {
+  background: transparent;
+  color: var(--fg);
+  border-color: rgba(255,255,255,0.16);
+}
+
+.badge-destructive {
+  background: var(--danger);
+  color: #ffffff;
+}
+
+/* =========================
+   ALERTS
+========================= */
+.ui-alert {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+/* =========================
+   SKELETON
+========================= */
+.ui-skeleton,
+.skeleton {
+  background: rgba(255, 255, 255, 0.10);
+  border-radius: 8px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: .5; }
+  50% { opacity: .9; }
+  100% { opacity: .5; }
+}
+
+/* =========================
+   HERO / AUTH HELPERS
+========================= */
+.hero-bg {
+  background:
+    radial-gradient(800px 400px at 50% -10%, rgba(59, 130, 246, 0.18), transparent 60%),
+    radial-gradient(700px 350px at 90% 10%, rgba(139, 92, 246, 0.18), transparent 60%),
+    var(--bg);
+}
+
+.brand-badge {
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #ffffff;
+}
+
+/* Card do Login / Register */
+.feature-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 20px 45px rgba(0,0,0,0.35);
+}
+
+/* =========================
+   ALERTS
+========================= */
+.alert-danger {
+  background: rgba(220, 38, 38, 0.12);
+  color: #fecaca;
+  border: 1px solid rgba(220, 38, 38, 0.35);
+}
+
+/* =========================
+   LINKS
+========================= */
+.link-primary {
+  color: #60a5fa;
+}
+.link-primary:hover {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+
+/* =========================
+   SHAKE ANIMATION (ERRO)
+========================= */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
+.shake {
+  animation: shake 0.35s ease-in-out;
+}
+
+/* =========================
+   PASSWORD STRENGTH
+========================= */
+.pw-meter {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.pw-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.12);
+}
+
+.pw-bar.active.weak { background: #dc2626; }
+.pw-bar.active.medium { background: #f59e0b; }
+.pw-bar.active.strong { background: #22c55e; }
+
+.pw-hint {
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.pw-ok {
+  color: #22c55e;
+}
+
+.pw-bad {
+  color: rgba(232, 238, 252, 0.6);
+}
+
+/* =========================
+   HEADER (auto-hide + blur)
+========================= */
+.app-header--fx {
+  /* fundo levemente translúcido para ficar bonito em cima do page-bg */
+  background: rgba(11, 15, 26, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  transition: transform 200ms ease, background 200ms ease, border-color 200ms ease;
+  will-change: transform;
+}
+
+.app-header--hidden {
+  transform: translateY(-110%);
+}
+

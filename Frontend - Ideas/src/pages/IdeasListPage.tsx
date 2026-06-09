@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../co
 import { Input } from "../components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
 import { Skeleton } from "../components/ui/skeleton";
+import { ConfirmDialog } from "../components/ui/confirm-dialog";
 
 export default function IdeasListPage() {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ export default function IdeasListPage() {
 
   const [q, setQ] = useState("");
   const [error, setError] = useState("");
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     const id = params.get("delete");
@@ -138,10 +140,9 @@ export default function IdeasListPage() {
                         description={idea.description}
                         createdAt={idea.createdAt}
                         onEdit={() => navigate(`/edit-idea/${idea.id}`)}
-                        onDelete={async () => {
+                        onDelete={() => {
                           setError("");
-                          const ok = await deleteIdea(idea.id);
-                          if (!ok) setError("Não foi possível excluir. Verifique se a ideia é sua.");
+                          setPendingDeleteId(idea.id);
                         }}
                         showActions
                         isOwner={isOwner(idea)}
@@ -154,6 +155,18 @@ export default function IdeasListPage() {
           </div>
         </main>
       </div>
+      <ConfirmDialog
+        open={pendingDeleteId !== null}
+        onOpenChange={(open) => { if (!open) setPendingDeleteId(null); }}
+        title="Excluir ideia"
+        description="Essa ação não pode ser desfeita. Deseja excluir esta ideia permanentemente?"
+        onConfirm={async () => {
+          if (!pendingDeleteId) return;
+          const ok = await deleteIdea(pendingDeleteId);
+          if (!ok) setError("Não foi possível excluir. Verifique se a ideia é sua.");
+          setPendingDeleteId(null);
+        }}
+      />
     </div>
   );
 }

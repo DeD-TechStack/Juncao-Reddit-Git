@@ -13,7 +13,7 @@ interface AuthContextType {
 
   login: (email: string, password: string) => Promise<boolean>;
   register: (name: string, email: string, password: string) => Promise<boolean>;
-  logout: () => void;
+  logout: () => Promise<void>;
 
   refreshMe: () => Promise<boolean>;
 }
@@ -35,7 +35,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => safeJsonParse<User>(localStorage.getItem("user")));
   const [token, setToken] = useState<string | null>(() => localStorage.getItem("token"));
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    const jwt = localStorage.getItem("token");
+    if (jwt) {
+      try {
+        await fetch(`${API_AUTH}/auth/logout`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${jwt}` },
+        });
+      } catch {
+        // falha silenciosa — limpa estado local de qualquer forma
+      }
+    }
     setUser(null);
     setToken(null);
     localStorage.removeItem("user");
@@ -61,7 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const me = await fetchMe(jwt);
     if (!me) {
-      logout();
+      await logout();
       return false;
     }
 
@@ -98,7 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const me = await fetchMe(data.token);
       if (!me) {
-        logout();
+        await logout();
         return false;
       }
 
@@ -128,7 +139,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const me = await fetchMe(data.token);
       if (!me) {
-        logout();
+        await logout();
         return false;
       }
 

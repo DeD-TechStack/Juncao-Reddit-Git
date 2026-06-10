@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { usePageTitle } from "../lib/usePageTitle";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function LoginPage() {
+  usePageTitle("Entrar");
   const navigate = useNavigate();
   const { login } = useAuth();
 

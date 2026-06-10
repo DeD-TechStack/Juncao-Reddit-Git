@@ -30,6 +30,7 @@ interface IdeasContextType {
   deleteIdea: (id: string) => Promise<boolean>;
 
   getIdea: (id: string) => Idea | undefined;
+  fetchIdeaById: (id: string) => Promise<Idea | null>;
 
   isOwner: (idea?: Pick<Idea, "authorId"> | null) => boolean;
 }
@@ -180,6 +181,19 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
     [authHeaders, refreshBoot]
   );
 
+  const fetchIdeaById = useCallback(
+    async (id: string): Promise<Idea | null> => {
+      try {
+        const res = await fetch(`${API_IDEAS}/${id}`, { headers: authHeaders() });
+        if (!res.ok) return null;
+        return (await res.json()) as Idea;
+      } catch {
+        return null;
+      }
+    },
+    [authHeaders]
+  );
+
   const value = useMemo<IdeasContextType>(
     () => ({
       ideas,
@@ -191,9 +205,10 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       updateIdea,
       deleteIdea,
       getIdea: (id) => myIdeas.find((i) => i.id === id) ?? ideas.find((i) => i.id === id),
+      fetchIdeaById,
       isOwner,
     }),
-    [ideas, myIdeas, loading, refreshAll, refreshMine, createIdea, updateIdea, deleteIdea, isOwner]
+    [ideas, myIdeas, loading, refreshAll, refreshMine, createIdea, updateIdea, deleteIdea, fetchIdeaById, isOwner]
   );
 
   return <IdeasContext.Provider value={value}>{children}</IdeasContext.Provider>;

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { usePageTitle } from "../lib/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { useAuth } from "../contexts/AuthContext";
@@ -33,6 +34,7 @@ interface ProfileForm {
 }
 
 export default function ProfilePage() {
+  usePageTitle("Perfil");
   const navigate = useNavigate();
   const { user, token, logout } = useAuth();
   const { myIdeas } = useIdeas();

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { usePageTitle } from "../lib/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import { useIdeas } from "../contexts/IdeasContext";
 import { useAuth } from "../contexts/AuthContext";
@@ -11,6 +12,7 @@ import { Textarea } from "../components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
 
 export default function CreateIdeaPage() {
+  usePageTitle("Nova Ideia");
   const navigate = useNavigate();
   const { user } = useAuth();
   const { createIdea } = useIdeas();

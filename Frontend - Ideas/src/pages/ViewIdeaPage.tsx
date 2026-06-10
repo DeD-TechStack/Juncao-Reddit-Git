@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { usePageTitle } from "../lib/usePageTitle";
 import Header from "../components/Header";
 import { Idea, useIdeas } from "../contexts/IdeasContext";
 
@@ -17,6 +18,8 @@ export default function ViewIdeaPage() {
   const [idea, setIdea] = useState<Idea | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+
+  usePageTitle(idea?.title ?? "Ideia");
 
   useEffect(() => {
     if (!id) return;

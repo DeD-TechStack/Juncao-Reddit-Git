@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { usePageTitle } from "../lib/usePageTitle";
 import Header from "../components/Header";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
@@ -10,6 +11,7 @@ type Props = {
 export default function ErrorPage({ type = "404" }: Props) {
   const navigate = useNavigate();
   const is403 = type === "403";
+  usePageTitle(is403 ? "Acesso negado" : "Página não encontrada");
 
   return (
     <div className="min-h-screen app-page">

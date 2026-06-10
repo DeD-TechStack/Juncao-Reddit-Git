@@ -1,19 +1,47 @@
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../components/Header";
-import { useIdeas } from "../contexts/IdeasContext";
+import { Idea, useIdeas } from "../contexts/IdeasContext";
 
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
 import { Badge } from "../components/ui/badge";
+import { Skeleton } from "../components/ui/skeleton";
 
 export default function ViewIdeaPage() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { getIdea, isOwner } = useIdeas();
+  const { fetchIdeaById, isOwner } = useIdeas();
 
-  const idea = useMemo(() => (id ? getIdea(id) : undefined), [getIdea, id]);
+  const [idea, setIdea] = useState<Idea | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    if (!id) return;
+
+    let cancelled = false;
+    setLoading(true);
+    setNotFound(false);
+
+    (async () => {
+      const result = await fetchIdeaById(id);
+      if (cancelled) return;
+
+      if (!result) {
+        setNotFound(true);
+      } else {
+        setIdea(result);
+      }
+      setLoading(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, fetchIdeaById]);
+
   const owner = isOwner(idea);
 
   if (!id) {
@@ -30,7 +58,22 @@ export default function ViewIdeaPage() {
     );
   }
 
-  if (!idea) {
+  if (loading) {
+    return (
+      <div className="min-h-screen app-page">
+        <Header />
+        <main className="container-app py-10">
+          <div className="mx-auto w-full max-w-3xl space-y-4">
+            <Skeleton className="h-8 w-2/3" />
+            <Skeleton className="h-40 w-full" />
+            <Skeleton className="h-40 w-full" />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (notFound || !idea) {
     return (
       <div className="min-h-screen app-page">
         <Header />
@@ -38,7 +81,7 @@ export default function ViewIdeaPage() {
           <Alert>
             <AlertTitle>Ideia não encontrada</AlertTitle>
             <AlertDescription>
-              Essa ideia não está no cache do front. Volte e atualize a lista.
+              Essa ideia não existe ou você não tem acesso a ela.
             </AlertDescription>
           </Alert>
 

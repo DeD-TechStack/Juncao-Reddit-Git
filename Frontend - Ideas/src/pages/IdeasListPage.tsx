@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { usePageTitle } from "../lib/usePageTitle";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import IdeaCard from "../components/IdeaCard";
@@ -12,6 +13,7 @@ import { Skeleton } from "../components/ui/skeleton";
 import { ConfirmDialog } from "../components/ui/confirm-dialog";
 
 export default function IdeasListPage() {
+  usePageTitle("Ideias");
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
 

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { usePageTitle } from "../lib/usePageTitle";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import { useIdeas } from "../contexts/IdeasContext";
@@ -10,6 +11,7 @@ import { Textarea } from "../components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
 
 export default function EditIdeaPage() {
+  usePageTitle("Editar Ideia");
   const navigate = useNavigate();
   const { id } = useParams();
   const { getIdea, updateIdea, deleteIdea, isOwner } = useIdeas();

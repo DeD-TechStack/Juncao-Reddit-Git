@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { usePageTitle } from "../lib/usePageTitle";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 type PwRuleKey = "minLen" | "upper" | "lower" | "number" | "special";
 
 export default function RegisterPage() {
+  usePageTitle("Criar conta");
   const navigate = useNavigate();
   const { register } = useAuth();
 

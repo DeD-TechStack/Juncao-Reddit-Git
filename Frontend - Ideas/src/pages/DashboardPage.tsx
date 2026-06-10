@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { usePageTitle } from "../lib/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import IdeaCard from "../components/IdeaCard";
@@ -11,6 +12,7 @@ import { Badge } from "../components/ui/badge";
 import { Skeleton } from "../components/ui/skeleton";
 
 export default function DashboardPage() {
+  usePageTitle("Dashboard");
   const navigate = useNavigate();
   const { user } = useAuth();
   const { myIdeas, loading } = useIdeas();

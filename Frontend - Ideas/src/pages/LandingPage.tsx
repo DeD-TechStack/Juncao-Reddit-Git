@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
+import { usePageTitle } from "../lib/usePageTitle";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function LandingPage() {
+  usePageTitle();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 

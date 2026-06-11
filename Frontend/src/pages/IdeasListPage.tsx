@@ -37,21 +37,13 @@ export default function IdeasListPage() {
     const id = params.get("delete");
     if (!id) return;
 
-    let cancelled = false;
+    setError("");
+    setPendingDeleteId(id);
 
-    (async () => {
-      const ok = await deleteIdea(id);
-      if (!cancelled && !ok) setError("Não foi possível excluir. Verifique se a ideia é sua.");
-
-      const next = new URLSearchParams(params);
-      next.delete("delete");
-      setParams(next, { replace: true });
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [params, setParams, deleteIdea]);
+    const next = new URLSearchParams(params);
+    next.delete("delete");
+    setParams(next, { replace: true });
+  }, [params, setParams]);
 
   const list = useMemo(() => {
     const merged = [...myIdeas];

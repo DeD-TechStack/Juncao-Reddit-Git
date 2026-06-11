@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "../contexts/AuthContext";
 import { IdeasProvider } from "../contexts/IdeasContext";
 import ProtectedRoute from "../components/ProtectedRoute";
+import UnauthorizedHandler from "../components/UnauthorizedHandler";
 
 import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/LoginPage";
@@ -19,6 +20,7 @@ export default function App() {
     <Router>
       <AuthProvider>
         <IdeasProvider>
+          <UnauthorizedHandler />
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { useAuth } from "../contexts/AuthContext";
 import { useIdeas } from "../contexts/IdeasContext";
+import { apiFetch } from "../lib/apiFetch";
 
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
@@ -63,7 +64,7 @@ export default function ProfilePage() {
     (async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${API_PROFILE}/profiles/me`, {
+        const res = await apiFetch(`${API_PROFILE}/profiles/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -93,7 +94,7 @@ export default function ProfilePage() {
     setSuccess("");
 
     try {
-      const res = await fetch(`${API_PROFILE}/profiles/me`, {
+      const res = await apiFetch(`${API_PROFILE}/profiles/me`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

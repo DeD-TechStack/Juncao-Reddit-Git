@@ -21,6 +21,8 @@ export default function IdeasListPage() {
     ideas,
     myIdeas,
     loading,
+    page,
+    totalPages,
     deleteIdea,
     refreshAll,
     refreshMine,
@@ -153,6 +155,28 @@ export default function IdeasListPage() {
                   </div>
                 )}
               </CardContent>
+
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between gap-2 px-6 pb-4">
+                  <Button
+                    variant="outline"
+                    disabled={page <= 0}
+                    onClick={() => refreshAll(page - 1)}
+                  >
+                    Anterior
+                  </Button>
+                  <span className="text-sm text-muted">
+                    Página {page + 1} de {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    disabled={page >= totalPages - 1}
+                    onClick={() => refreshAll(page + 1)}
+                  >
+                    Próxima
+                  </Button>
+                </div>
+              )}
             </Card>
           </div>
         </main>

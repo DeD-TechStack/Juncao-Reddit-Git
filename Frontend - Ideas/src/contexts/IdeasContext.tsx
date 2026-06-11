@@ -8,6 +8,7 @@ import {
   useCallback,
 } from "react";
 import { useAuth } from "./AuthContext";
+import { apiFetch } from "../lib/apiFetch";
 
 export interface Idea {
   id: string;
@@ -66,7 +67,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const res = await fetch(API_IDEAS, { headers: authHeaders() });
+      const res = await apiFetch(API_IDEAS, { headers: authHeaders() });
 
       if (!res.ok) {
         if (res.status === 401 || res.status === 403) setIdeas([]);
@@ -88,7 +89,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const res = await fetch(`${API_IDEAS}/my-ideas`, { headers: authHeaders() });
+      const res = await apiFetch(`${API_IDEAS}/my-ideas`, { headers: authHeaders() });
 
       if (!res.ok) {
         if (res.status === 401 || res.status === 403) setMyIdeas([]);
@@ -125,7 +126,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   const createIdea = useCallback(
     async (idea: { title: string; description: string }) => {
       try {
-        const res = await fetch(API_IDEAS, {
+        const res = await apiFetch(API_IDEAS, {
           method: "POST",
           headers: { "Content-Type": "application/json", ...authHeaders() },
           body: JSON.stringify(idea),
@@ -145,7 +146,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   const updateIdea = useCallback(
     async (id: string, idea: { title: string; description: string }) => {
       try {
-        const res = await fetch(`${API_IDEAS}/${id}`, {
+        const res = await apiFetch(`${API_IDEAS}/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json", ...authHeaders() },
           body: JSON.stringify(idea),
@@ -165,7 +166,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   const deleteIdea = useCallback(
     async (id: string) => {
       try {
-        const res = await fetch(`${API_IDEAS}/${id}`, {
+        const res = await apiFetch(`${API_IDEAS}/${id}`, {
           method: "DELETE",
           headers: authHeaders(),
         });
@@ -184,7 +185,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   const fetchIdeaById = useCallback(
     async (id: string): Promise<Idea | null> => {
       try {
-        const res = await fetch(`${API_IDEAS}/${id}`, { headers: authHeaders() });
+        const res = await apiFetch(`${API_IDEAS}/${id}`, { headers: authHeaders() });
         if (!res.ok) return null;
         return (await res.json()) as Idea;
       } catch {

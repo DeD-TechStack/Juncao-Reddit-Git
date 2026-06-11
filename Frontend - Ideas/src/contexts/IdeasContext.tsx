@@ -18,12 +18,25 @@ export interface Idea {
   createdAt: string;
 }
 
+interface PageResponse<T> {
+  content: T[];
+  number: number;
+  totalPages: number;
+  totalElements: number;
+}
+
+const PAGE_SIZE = 20;
+
 interface IdeasContextType {
   ideas: Idea[];
   myIdeas: Idea[];
   loading: boolean;
 
-  refreshAll: () => Promise<void>;
+  page: number;
+  totalPages: number;
+  totalElements: number;
+
+  refreshAll: (page?: number) => Promise<void>;
   refreshMine: () => Promise<void>;
 
   createIdea: (idea: { title: string; description: string }) => Promise<boolean>;
@@ -46,6 +59,9 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [myIdeas, setMyIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
 
   const authHeaders = useCallback((): Record<string, string> => {
     return token ? { Authorization: `Bearer ${token}` } : {};
@@ -60,22 +76,28 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
     [user?.email]
   );
 
-  const refreshAll = useCallback(async () => {
+  const refreshAll = useCallback(async (targetPage = 0) => {
     if (!isAuthenticated) {
       setIdeas([]);
+      setPage(0);
+      setTotalPages(0);
+      setTotalElements(0);
       return;
     }
 
     try {
-      const res = await apiFetch(API_IDEAS, { headers: authHeaders() });
+      const res = await apiFetch(`${API_IDEAS}?page=${targetPage}&size=${PAGE_SIZE}`, { headers: authHeaders() });
 
       if (!res.ok) {
         if (res.status === 401 || res.status === 403) setIdeas([]);
         return;
       }
 
-      const data = (await res.json()) as Idea[];
-      setIdeas(data);
+      const data = (await res.json()) as PageResponse<Idea>;
+      setIdeas(data.content);
+      setPage(data.number);
+      setTotalPages(data.totalPages);
+      setTotalElements(data.totalElements);
     } catch (err) {
       console.error(err);
       setIdeas([]);
@@ -89,15 +111,15 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const res = await apiFetch(`${API_IDEAS}/my-ideas`, { headers: authHeaders() });
+      const res = await apiFetch(`${API_IDEAS}/my-ideas?size=100`, { headers: authHeaders() });
 
       if (!res.ok) {
         if (res.status === 401 || res.status === 403) setMyIdeas([]);
         return;
       }
 
-      const data = (await res.json()) as Idea[];
-      setMyIdeas(data);
+      const data = (await res.json()) as PageResponse<Idea>;
+      setMyIdeas(data.content);
     } catch (err) {
       console.error(err);
       setMyIdeas([]);
@@ -200,6 +222,9 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       ideas,
       myIdeas,
       loading,
+      page,
+      totalPages,
+      totalElements,
       refreshAll,
       refreshMine,
       createIdea,
@@ -209,7 +234,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       fetchIdeaById,
       isOwner,
     }),
-    [ideas, myIdeas, loading, refreshAll, refreshMine, createIdea, updateIdea, deleteIdea, fetchIdeaById, isOwner]
+    [ideas, myIdeas, loading, page, totalPages, totalElements, refreshAll, refreshMine, createIdea, updateIdea, deleteIdea, fetchIdeaById, isOwner]
   );
 
   return <IdeasContext.Provider value={value}>{children}</IdeasContext.Provider>;

@@ -120,8 +120,8 @@ export default function Header({ className }: HeaderProps) {
 
               <Button
                 variant="destructive"
-                onClick={() => {
-                  logout();
+                onClick={async () => {
+                  await logout();
                   navigate("/login");
                 }}
               >

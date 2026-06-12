@@ -28,7 +28,7 @@ export function ConfirmDialog({
           <AlertDialog.Title className="text-lg font-semibold">
             {title}
           </AlertDialog.Title>
-          <AlertDialog.Description className="mt-2 text-sm text-muted-foreground">
+          <AlertDialog.Description className="mt-2 text-sm text-muted">
             {description}
           </AlertDialog.Description>
           <div className="mt-6 flex justify-end gap-3">

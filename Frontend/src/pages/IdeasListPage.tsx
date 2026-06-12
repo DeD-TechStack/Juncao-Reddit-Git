@@ -84,7 +84,7 @@ export default function IdeasListPage() {
                   variant="outline"
                   onClick={async () => {
                     setError("");
-                    await Promise.all([refreshAll(), refreshMine()]);
+                    await Promise.all([refreshAll(page), refreshMine()]);
                   }}
                 >
                   Atualizar

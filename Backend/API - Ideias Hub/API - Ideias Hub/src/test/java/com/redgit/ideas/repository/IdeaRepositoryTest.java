@@ -9,6 +9,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,6 +22,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -114,33 +119,34 @@ class IdeaRepositoryTest {
         idea2.setAuthorId("same-author@test.com");
 
         List<Idea> authorIdeas = Arrays.asList(idea1, idea2);
-        when(ideaRepository.findByAuthorId("same-author@test.com")).thenReturn(authorIdeas);
+        Page<Idea> authorIdeasPage = new PageImpl<>(authorIdeas);
+        when(ideaRepository.findByAuthorId(eq("same-author@test.com"), any(Pageable.class))).thenReturn(authorIdeasPage);
 
         // Act
-        List<Idea> ideas = ideaRepository.findByAuthorId("same-author@test.com");
+        Page<Idea> ideasPage = ideaRepository.findByAuthorId("same-author@test.com", Pageable.unpaged());
 
         // Assert
-        assertEquals(2, ideas.size());
-        assertTrue(ideas.stream().allMatch(idea ->
+        assertEquals(2, ideasPage.getTotalElements());
+        assertTrue(ideasPage.getContent().stream().allMatch(idea ->
                 idea.getAuthorId().equals("same-author@test.com")));
 
-        verify(ideaRepository, times(1)).findByAuthorId("same-author@test.com");
+        verify(ideaRepository, times(1)).findByAuthorId(eq("same-author@test.com"), any(Pageable.class));
     }
 
     @Test
     @DisplayName("Deve retornar lista vazia quando autor não tem ideias")
     void findByAuthorId_whenNoIdeas_shouldReturnEmptyList() {
         // Arrange
-        when(ideaRepository.findByAuthorId("non-existent-author@test.com"))
-                .thenReturn(Collections.emptyList());
+        when(ideaRepository.findByAuthorId(eq("non-existent-author@test.com"), any(Pageable.class)))
+                .thenReturn(Page.empty());
 
         // Act
-        List<Idea> ideas = ideaRepository.findByAuthorId("non-existent-author@test.com");
+        Page<Idea> ideasPage = ideaRepository.findByAuthorId("non-existent-author@test.com", Pageable.unpaged());
 
         // Assert
-        assertTrue(ideas.isEmpty());
+        assertTrue(ideasPage.isEmpty());
 
-        verify(ideaRepository, times(1)).findByAuthorId("non-existent-author@test.com");
+        verify(ideaRepository, times(1)).findByAuthorId(eq("non-existent-author@test.com"), any(Pageable.class));
     }
 
     @Test
@@ -311,21 +317,21 @@ class IdeaRepositoryTest {
                 .thenReturn(idea2)
                 .thenReturn(idea3);
 
-        when(ideaRepository.findByAuthorId("user@test.com"))
-                .thenReturn(Arrays.asList(idea1, idea2, idea3));
+        when(ideaRepository.findByAuthorId(eq("user@test.com"), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(Arrays.asList(idea1, idea2, idea3)));
 
         // Act
         ideaRepository.save(idea1);
         ideaRepository.save(idea2);
         ideaRepository.save(idea3);
 
-        List<Idea> ideas = ideaRepository.findByAuthorId("user@test.com");
+        Page<Idea> ideasPage = ideaRepository.findByAuthorId("user@test.com", Pageable.unpaged());
 
         // Assert
-        assertEquals(3, ideas.size());
+        assertEquals(3, ideasPage.getTotalElements());
 
         verify(ideaRepository, times(3)).save(any(Idea.class));
-        verify(ideaRepository, times(1)).findByAuthorId("user@test.com");
+        verify(ideaRepository, times(1)).findByAuthorId(eq("user@test.com"), any(Pageable.class));
     }
 
     @Test

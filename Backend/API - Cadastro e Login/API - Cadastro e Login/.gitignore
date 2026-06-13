@@ -46,3 +46,8 @@ uploads/
 # --- Sistema Operacional ---
 .DS_Store
 Thumbs.db
+
+# --- Banco de dados H2 (gerado em runtime) ---
+data/
+*.mv.db
+*.trace.db

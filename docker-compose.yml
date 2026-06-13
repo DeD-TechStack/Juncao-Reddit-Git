@@ -1,25 +1,4 @@
 services:
-  
-  mysql:
-    image: mysql:latest
-    container_name: redgit-mysql
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: mydatabase
-      MYSQL_USER: myuser
-      MYSQL_PASSWORD: secret
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - redgit-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   redis:
     image: redis:7-alpine
@@ -56,7 +35,5 @@ networks:
     driver: bridge
 
 volumes:
-  mysql_data:
-    driver: local
   redis_data:
     driver: local

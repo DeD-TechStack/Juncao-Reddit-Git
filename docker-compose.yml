@@ -24,7 +24,7 @@ services:
     environment:
       - REDIS_HOSTS=local:redis:6379
     ports:
-      - "8085:8081"
+      - "8086:8081"
     networks:
       - redgit-network
     depends_on:

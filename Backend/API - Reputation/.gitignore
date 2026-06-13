@@ -39,3 +39,8 @@ src/main/resources/application.properties
 *.jks
 *.pem
 *.key
+
+### H2 (gerado em runtime) ###
+data/
+*.mv.db
+*.trace.db

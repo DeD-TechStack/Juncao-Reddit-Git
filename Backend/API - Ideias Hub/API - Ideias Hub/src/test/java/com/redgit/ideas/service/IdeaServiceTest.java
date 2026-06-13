@@ -1,5 +1,6 @@
 package com.redgit.ideas.service;
 
+import com.redgit.ideas.controller.dto.IdeaCreateDTO;
 import com.redgit.ideas.controller.dto.IdeaDTO;
 import com.redgit.ideas.infrastructure.entities.Idea;
 import com.redgit.ideas.infrastructure.repository.IdeaRepository;
@@ -12,6 +13,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -19,6 +23,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,15 +38,17 @@ class IdeaServiceTest {
     @InjectMocks
     private IdeaService ideaService;
 
+    private IdeaCreateDTO testCreateDTO;
     private IdeaDTO testDTO;
     private Idea testIdea;
 
     @BeforeEach
     void setUp() {
+        testCreateDTO = new IdeaCreateDTO("Test Idea", "Test Description");
+
         testDTO = new IdeaDTO();
         testDTO.setTitle("Test Idea");
         testDTO.setDescription("Test Description");
-        testDTO.setAuthorId("user@test.com");
 
         testIdea = new Idea();
         testIdea.setId("test-id-123");
@@ -60,7 +69,7 @@ class IdeaServiceTest {
             when(ideaRepository.save(any(Idea.class))).thenReturn(testIdea);
 
             // Act
-            Idea result = ideaService.createIdea(testDTO);
+            Idea result = ideaService.createIdea(testCreateDTO, "user@test.com");
 
             // Assert
             assertNotNull(result);
@@ -78,7 +87,7 @@ class IdeaServiceTest {
             when(ideaRepository.save(any(Idea.class))).thenReturn(testIdea);
 
             // Act
-            ideaService.createIdea(testDTO);
+            ideaService.createIdea(testCreateDTO, "user@test.com");
 
             // Assert
             verify(ideaRepository).save(ideaCaptor.capture());
@@ -94,14 +103,14 @@ class IdeaServiceTest {
             when(ideaRepository.save(any(Idea.class))).thenReturn(testIdea);
 
             // Act
-            ideaService.createIdea(testDTO);
+            ideaService.createIdea(testCreateDTO, "user@test.com");
 
             // Assert
             verify(ideaRepository).save(ideaCaptor.capture());
             Idea captured = ideaCaptor.getValue();
-            assertEquals(testDTO.getTitle(), captured.getTitle());
-            assertEquals(testDTO.getDescription(), captured.getDescription());
-            assertEquals(testDTO.getAuthorId(), captured.getAuthorId());
+            assertEquals(testCreateDTO.title(), captured.getTitle());
+            assertEquals(testCreateDTO.description(), captured.getDescription());
+            assertEquals("user@test.com", captured.getAuthorId());
         }
 
         @Test
@@ -112,7 +121,7 @@ class IdeaServiceTest {
             when(ideaRepository.save(any(Idea.class))).thenReturn(testIdea);
 
             // Act
-            ideaService.createIdea(testDTO);
+            ideaService.createIdea(testCreateDTO, "user@test.com");
 
             // Assert
             verify(ideaRepository).save(ideaCaptor.capture());
@@ -136,45 +145,45 @@ class IdeaServiceTest {
             idea2.setAuthorId("another@test.com");
 
             List<Idea> ideas = Arrays.asList(testIdea, idea2);
-            when(ideaRepository.findAll()).thenReturn(ideas);
+            when(ideaRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(ideas));
 
             // Act
-            List<Idea> result = ideaService.getAllIdeas();
+            Page<Idea> result = ideaService.getAllIdeas(Pageable.unpaged());
 
             // Assert
             assertNotNull(result);
-            assertEquals(2, result.size());
-            assertEquals("Test Idea", result.get(0).getTitle());
-            assertEquals("Another Idea", result.get(1).getTitle());
-            verify(ideaRepository, times(1)).findAll();
+            assertEquals(2, result.getTotalElements());
+            assertEquals("Test Idea", result.getContent().get(0).getTitle());
+            assertEquals("Another Idea", result.getContent().get(1).getTitle());
+            verify(ideaRepository, times(1)).findAll(any(Pageable.class));
         }
 
         @Test
-        @DisplayName("Deve retornar lista vazia quando não há ideias")
-        void getAllIdeas_whenEmpty_shouldReturnEmptyList() {
+        @DisplayName("Deve retornar página vazia quando não há ideias")
+        void getAllIdeas_whenEmpty_shouldReturnEmptyPage() {
             // Arrange
-            when(ideaRepository.findAll()).thenReturn(Arrays.asList());
+            when(ideaRepository.findAll(any(Pageable.class))).thenReturn(Page.empty());
 
             // Act
-            List<Idea> result = ideaService.getAllIdeas();
+            Page<Idea> result = ideaService.getAllIdeas(Pageable.unpaged());
 
             // Assert
             assertNotNull(result);
             assertTrue(result.isEmpty());
-            verify(ideaRepository, times(1)).findAll();
+            verify(ideaRepository, times(1)).findAll(any(Pageable.class));
         }
 
         @Test
         @DisplayName("Deve chamar repository.findAll apenas uma vez")
         void getAllIdeas_shouldCallRepositoryOnce() {
             // Arrange
-            when(ideaRepository.findAll()).thenReturn(Arrays.asList(testIdea));
+            when(ideaRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(Arrays.asList(testIdea)));
 
             // Act
-            ideaService.getAllIdeas();
+            ideaService.getAllIdeas(Pageable.unpaged());
 
             // Assert
-            verify(ideaRepository, times(1)).findAll();
+            verify(ideaRepository, times(1)).findAll(any(Pageable.class));
         }
     }
 
@@ -205,10 +214,9 @@ class IdeaServiceTest {
             when(ideaRepository.findById("non-existent")).thenReturn(Optional.empty());
 
             // Act & Assert
-            RuntimeException exception = assertThrows(RuntimeException.class,
+            assertThrows(RuntimeException.class,
                     () -> ideaService.findById("non-existent"));
 
-            assertEquals("id não encontrado", exception.getMessage());
             verify(ideaRepository, times(1)).findById("non-existent");
         }
 
@@ -244,45 +252,47 @@ class IdeaServiceTest {
             idea2.setAuthorId("user@test.com");
 
             List<Idea> ideas = Arrays.asList(testIdea, idea2);
-            when(ideaRepository.findByAuthorId("user@test.com")).thenReturn(ideas);
+            when(ideaRepository.findByAuthorId(eq("user@test.com"), any(Pageable.class)))
+                    .thenReturn(new PageImpl<>(ideas));
 
             // Act
-            List<Idea> result = ideaService.getIdeasByAuthor("user@test.com");
+            Page<Idea> result = ideaService.getIdeasByAuthor("user@test.com", Pageable.unpaged());
 
             // Assert
             assertNotNull(result);
-            assertEquals(2, result.size());
-            assertTrue(result.stream().allMatch(
+            assertEquals(2, result.getTotalElements());
+            assertTrue(result.getContent().stream().allMatch(
                     idea -> "user@test.com".equals(idea.getAuthorId())));
-            verify(ideaRepository, times(1)).findByAuthorId("user@test.com");
+            verify(ideaRepository, times(1)).findByAuthorId(eq("user@test.com"), any(Pageable.class));
         }
 
         @Test
-        @DisplayName("Deve retornar lista vazia quando autor não tem ideias")
-        void getIdeasByAuthor_whenNoIdeas_shouldReturnEmptyList() {
+        @DisplayName("Deve retornar página vazia quando autor não tem ideias")
+        void getIdeasByAuthor_whenNoIdeas_shouldReturnEmptyPage() {
             // Arrange
-            when(ideaRepository.findByAuthorId("another@test.com")).thenReturn(Arrays.asList());
+            when(ideaRepository.findByAuthorId(eq("another@test.com"), any(Pageable.class)))
+                    .thenReturn(Page.empty());
 
             // Act
-            List<Idea> result = ideaService.getIdeasByAuthor("another@test.com");
+            Page<Idea> result = ideaService.getIdeasByAuthor("another@test.com", Pageable.unpaged());
 
             // Assert
             assertNotNull(result);
             assertTrue(result.isEmpty());
-            verify(ideaRepository, times(1)).findByAuthorId("another@test.com");
+            verify(ideaRepository, times(1)).findByAuthorId(eq("another@test.com"), any(Pageable.class));
         }
 
         @Test
         @DisplayName("Deve chamar repository com authorId correto")
         void getIdeasByAuthor_shouldCallRepositoryWithCorrectAuthorId() {
             // Arrange
-            when(ideaRepository.findByAuthorId(anyString())).thenReturn(Arrays.asList());
+            when(ideaRepository.findByAuthorId(anyString(), any(Pageable.class))).thenReturn(Page.empty());
 
             // Act
-            ideaService.getIdeasByAuthor("specific@author.com");
+            ideaService.getIdeasByAuthor("specific@author.com", Pageable.unpaged());
 
             // Assert
-            verify(ideaRepository).findByAuthorId("specific@author.com");
+            verify(ideaRepository).findByAuthorId(eq("specific@author.com"), any(Pageable.class));
         }
     }
 

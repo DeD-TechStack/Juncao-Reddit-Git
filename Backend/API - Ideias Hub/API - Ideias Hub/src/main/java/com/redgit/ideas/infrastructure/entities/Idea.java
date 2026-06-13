@@ -1,15 +1,16 @@
 package com.redgit.ideas.infrastructure.entities;
 
+import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
 @Data
-@Document(collection = "ideas")
+@Entity
+@Table(name = "ideas")
 public class Idea {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String title;
     private String description;

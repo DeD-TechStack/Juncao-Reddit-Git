@@ -1,12 +1,6 @@
-<<<<<<<< HEAD:API - Ideias Hub/src/test/java/com/redgit/ideas/exception/ErrorResponseTest.java
-package com.redgit.ideas.exception;
-
-import com.redgit.ideas.infrastructure.exception.ErrorResponse;
-========
 package com.redgit.auth.exception;
 
 import com.redgit.auth.infrastructure.exception.ErrorResponse;
->>>>>>>> dc123b385db9a3da8dda22b5fab7736abf95e4fa:API - Cadastro e Login/src/test/java/com/redgit/auth/exception/ErrorResponseTest.java
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

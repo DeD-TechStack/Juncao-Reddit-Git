@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:API - Profile/src/test/java/com/redgit/profile/service/TokenServiceTest.java
-package com.redgit.profile.service;
-========
 package com.redgit.ideas.service;
->>>>>>>> ef40270143fc8b117a308d480711776626cac10c:API - Ideias Hub/src/test/java/com/redgit/ideas/service/TokenServiceTest.java
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;

@@ -22,7 +22,7 @@ $services = @(
 
     # Serviços órfãos — descomentar após decisão em TASK-03:
     # [PSCustomObject]@{ Name = "Reputation"; Path = "API - Reputation"; Port = 8084 }
-    # [PSCustomObject]@{ Name = "Trending";   Path = "API - Trending";   Port = 9999 } # porta: definir após TASK-01
+    # [PSCustomObject]@{ Name = "Trending";   Path = "API - Trending";   Port = 8085 }
 )
 
 foreach ($svc in $services) {

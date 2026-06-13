@@ -19,7 +19,7 @@ class ReputationServiceTest {
         UserReputationRepository repo = mock(UserReputationRepository.class);
         ReputationService service = new ReputationService(repo);
 
-        when(repo.findByUserEmail("a@a.com")).thenReturn(Optional.empty());
+        when(repo.findByUserId("a@a.com")).thenReturn(Optional.empty());
         when(repo.save(any(UserReputation.class))).thenAnswer(inv -> inv.getArgument(0));
 
         ReputationEventResponseDTO res = service.applyEvent("a@a.com", ReputationEventType.IDEA_TRENDING);
@@ -38,7 +38,7 @@ class ReputationServiceTest {
         UserReputation existing = new UserReputation("a@a.com");
         existing.apply(590, 3, "Arquiteto de Ideias");
 
-        when(repo.findByUserEmail("a@a.com")).thenReturn(Optional.of(existing));
+        when(repo.findByUserId("a@a.com")).thenReturn(Optional.of(existing));
 
         ReputationEventResponseDTO res = service.applyEvent("a@a.com", ReputationEventType.CONTRIBUTION_ACCEPTED);
         assertEquals(640, res.totalXp());

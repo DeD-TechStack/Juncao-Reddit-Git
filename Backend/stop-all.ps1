@@ -10,7 +10,7 @@ $ports = @(8081, 8082, 8083)
 
 # Descomenttar após TASK-03:
 # $ports += 8084  # Reputation
-# $ports += 9999  # Trending (porta: definir após TASK-01)
+# $ports += 8085  # Trending
 
 $stopped = 0
 

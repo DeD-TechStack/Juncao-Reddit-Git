@@ -18,7 +18,7 @@ Start-Sleep -Seconds 2
 $services = @(
     [PSCustomObject]@{ Name = "Cadastro e Login"; Path = "API - Cadastro e Login\API - Cadastro e Login"; Port = 8081 }
     [PSCustomObject]@{ Name = "Ideias Hub";       Path = "API - Ideias Hub\API - Ideias Hub";             Port = 8082 }
-    [PSCustomObject]@{ Name = "Profile";          Path = "API - Profile\API - Profile";                   Port = 8083 }
+    [PSCustomObject]@{ Name = "Profile";          Path = "API - Profile";                                 Port = 8083 }
 
     # Serviços órfãos — descomentar após decisão em TASK-03:
     # [PSCustomObject]@{ Name = "Reputation"; Path = "API - Reputation"; Port = 8084 }

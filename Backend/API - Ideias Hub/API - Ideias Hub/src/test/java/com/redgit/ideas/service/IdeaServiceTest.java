@@ -2,6 +2,7 @@ package com.redgit.ideas.service;
 
 import com.redgit.ideas.controller.dto.IdeaCreateDTO;
 import com.redgit.ideas.controller.dto.IdeaDTO;
+import com.redgit.ideas.infrastructure.client.TrendingClient;
 import com.redgit.ideas.infrastructure.entities.Idea;
 import com.redgit.ideas.infrastructure.repository.IdeaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +35,9 @@ class IdeaServiceTest {
 
     @Mock
     private IdeaRepository ideaRepository;
+
+    @Mock
+    private TrendingClient trendingClient;
 
     @InjectMocks
     private IdeaService ideaService;
@@ -592,6 +596,44 @@ class IdeaServiceTest {
             // Assert
             assertEquals(3L, testIdea.getLikesCount());
             verify(ideaRepository, times(3)).save(any(Idea.class));
+        }
+
+        @Test
+        @DisplayName("Deve notificar o servico Trending ao curtir")
+        void likeIdea_shouldNotifyTrending() {
+            // Arrange
+            testIdea.setLikesCount(0L);
+            when(ideaRepository.findById("test-id-123")).thenReturn(Optional.of(testIdea));
+            when(ideaRepository.save(any(Idea.class))).thenReturn(testIdea);
+
+            // Act
+            ideaService.likeIdea("test-id-123");
+
+            // Assert
+            verify(trendingClient, times(1)).notifyLike("test-id-123");
+        }
+
+        @Test
+        @DisplayName("Deve concluir o like normalmente mesmo se a notificacao ao Trending falhar")
+        void likeIdea_whenTrendingNotificationFails_shouldStillReturnLikedIdea() {
+            // Arrange
+            testIdea.setLikesCount(0L);
+            Idea liked = new Idea();
+            liked.setId("test-id-123");
+            liked.setLikesCount(1L);
+            when(ideaRepository.findById("test-id-123")).thenReturn(Optional.of(testIdea));
+            when(ideaRepository.save(any(Idea.class))).thenReturn(liked);
+            doThrow(new RuntimeException("Trending indisponivel"))
+                    .when(trendingClient).notifyLike("test-id-123");
+
+            // Act
+            Idea result = ideaService.likeIdea("test-id-123");
+
+            // Assert
+            assertNotNull(result);
+            assertEquals(1L, result.getLikesCount());
+            verify(ideaRepository, times(1)).save(any(Idea.class));
+            verify(trendingClient, times(1)).notifyLike("test-id-123");
         }
     }
 

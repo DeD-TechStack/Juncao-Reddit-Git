@@ -16,4 +16,5 @@ public class Idea {
     private String description;
     private String authorId;
     private LocalDateTime createdAt = LocalDateTime.now();
+    private long likesCount = 0;
 }

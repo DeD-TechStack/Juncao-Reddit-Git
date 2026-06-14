@@ -2,6 +2,7 @@ package com.redgit.ideas.service;
 
 import com.redgit.ideas.controller.dto.IdeaCreateDTO;
 import com.redgit.ideas.controller.dto.IdeaDTO;
+import com.redgit.ideas.infrastructure.client.ReputationClient;
 import com.redgit.ideas.infrastructure.client.TrendingClient;
 import com.redgit.ideas.infrastructure.entities.Idea;
 import com.redgit.ideas.infrastructure.repository.IdeaRepository;
@@ -22,6 +23,7 @@ public class IdeaService {
 
     private final IdeaRepository ideaRepository;
     private final TrendingClient trendingClient;
+    private final ReputationClient reputationClient;
 
     public Idea createIdea(IdeaCreateDTO dto, String authorEmail) {
         Idea idea = new Idea();
@@ -79,6 +81,12 @@ public class IdeaService {
             trendingClient.notifyLike(saved.getId());
         } catch (Exception e) {
             log.warn("Falha ao notificar like ao servico Trending para ideaId={}", saved.getId(), e);
+        }
+
+        try {
+            reputationClient.notifyLikeGained(saved.getAuthorId(), saved.getId());
+        } catch (Exception e) {
+            log.warn("Falha ao notificar evento de reputacao para authorId={}", saved.getAuthorId(), e);
         }
 
         return saved;

@@ -24,7 +24,7 @@ class TrendingClientTest {
     void setUp() {
         RestClient.Builder builder = RestClient.builder();
         mockServer = MockRestServiceServer.bindTo(builder).build();
-        trendingClient = new TrendingClient(builder, "http://localhost:8085");
+        trendingClient = new TrendingClient(builder, "http://localhost:8085", "test-internal-service-secret-for-context-load");
     }
 
     @Test

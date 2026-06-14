@@ -2,6 +2,7 @@ package com.redgit.ideas.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -173,6 +174,39 @@ class TokenServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals(TEST_EMAIL, result);
+    }
+
+    @Test
+    @DisplayName("Deve gerar um token de servico valido com issuer, subject e claim userId corretos")
+    void generateServiceToken_shouldGenerateValidTokenWithUserIdClaim() {
+        // Act
+        String token = tokenService.generateServiceToken(TEST_EMAIL);
+
+        // Assert
+        assertNotNull(token);
+        Algorithm algorithm = Algorithm.HMAC256(TEST_SECRET);
+        DecodedJWT decoded = JWT.require(algorithm)
+                .withIssuer("login-auth-api")
+                .build()
+                .verify(token);
+        assertEquals(TEST_EMAIL, decoded.getSubject());
+        assertEquals(TEST_EMAIL, decoded.getClaim("userId").asString());
+        assertTrue(decoded.getExpiresAt().toInstant().isAfter(Instant.now()));
+    }
+
+    @Test
+    @DisplayName("Deve gerar token de servico com expiracao de curta duracao")
+    void generateServiceToken_shouldHaveShortExpiration() {
+        // Act
+        String token = tokenService.generateServiceToken(TEST_EMAIL);
+
+        // Assert
+        Algorithm algorithm = Algorithm.HMAC256(TEST_SECRET);
+        DecodedJWT decoded = JWT.require(algorithm)
+                .withIssuer("login-auth-api")
+                .build()
+                .verify(token);
+        assertTrue(decoded.getExpiresAt().toInstant().isBefore(Instant.now().plus(10, ChronoUnit.MINUTES)));
     }
 }
 

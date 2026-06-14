@@ -2,6 +2,7 @@ package com.redgit.ideas.service;
 
 import com.redgit.ideas.controller.dto.IdeaCreateDTO;
 import com.redgit.ideas.controller.dto.IdeaDTO;
+import com.redgit.ideas.infrastructure.client.ReputationClient;
 import com.redgit.ideas.infrastructure.client.TrendingClient;
 import com.redgit.ideas.infrastructure.entities.Idea;
 import com.redgit.ideas.infrastructure.repository.IdeaRepository;
@@ -38,6 +39,9 @@ class IdeaServiceTest {
 
     @Mock
     private TrendingClient trendingClient;
+
+    @Mock
+    private ReputationClient reputationClient;
 
     @InjectMocks
     private IdeaService ideaService;
@@ -634,6 +638,47 @@ class IdeaServiceTest {
             assertEquals(1L, result.getLikesCount());
             verify(ideaRepository, times(1)).save(any(Idea.class));
             verify(trendingClient, times(1)).notifyLike("test-id-123");
+        }
+
+        @Test
+        @DisplayName("Deve notificar o servico Reputation com o autor da ideia ao curtir")
+        void likeIdea_shouldNotifyReputation() {
+            // Arrange
+            testIdea.setLikesCount(0L);
+            testIdea.setAuthorId("author@test.com");
+            when(ideaRepository.findById("test-id-123")).thenReturn(Optional.of(testIdea));
+            when(ideaRepository.save(any(Idea.class))).thenReturn(testIdea);
+
+            // Act
+            ideaService.likeIdea("test-id-123");
+
+            // Assert
+            verify(reputationClient, times(1)).notifyLikeGained("author@test.com", "test-id-123");
+        }
+
+        @Test
+        @DisplayName("Deve concluir o like normalmente mesmo se a notificacao ao Reputation falhar")
+        void likeIdea_whenReputationNotificationFails_shouldStillReturnLikedIdea() {
+            // Arrange
+            testIdea.setLikesCount(0L);
+            testIdea.setAuthorId("author@test.com");
+            Idea liked = new Idea();
+            liked.setId("test-id-123");
+            liked.setAuthorId("author@test.com");
+            liked.setLikesCount(1L);
+            when(ideaRepository.findById("test-id-123")).thenReturn(Optional.of(testIdea));
+            when(ideaRepository.save(any(Idea.class))).thenReturn(liked);
+            doThrow(new RuntimeException("Reputation indisponivel"))
+                    .when(reputationClient).notifyLikeGained("author@test.com", "test-id-123");
+
+            // Act
+            Idea result = ideaService.likeIdea("test-id-123");
+
+            // Assert
+            assertNotNull(result);
+            assertEquals(1L, result.getLikesCount());
+            verify(ideaRepository, times(1)).save(any(Idea.class));
+            verify(reputationClient, times(1)).notifyLikeGained("author@test.com", "test-id-123");
         }
     }
 

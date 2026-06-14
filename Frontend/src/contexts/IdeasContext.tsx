@@ -16,6 +16,7 @@ export interface Idea {
   description: string;
   authorId: string;
   createdAt: string;
+  likesCount: number;
 }
 
 interface PageResponse<T> {
@@ -42,6 +43,7 @@ interface IdeasContextType {
   createIdea: (idea: { title: string; description: string }) => Promise<boolean>;
   updateIdea: (id: string, idea: { title: string; description: string }) => Promise<boolean>;
   deleteIdea: (id: string) => Promise<boolean>;
+  likeIdea: (id: string) => Promise<Idea | null>;
 
   getIdea: (id: string) => Idea | undefined;
   fetchIdeaById: (id: string) => Promise<Idea | null>;
@@ -204,6 +206,29 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
     [authHeaders, refreshBoot]
   );
 
+  const likeIdea = useCallback(
+    async (id: string): Promise<Idea | null> => {
+      try {
+        const res = await apiFetch(`${API_IDEAS}/${id}/like`, {
+          method: "POST",
+          headers: authHeaders(),
+        });
+
+        if (!res.ok) return null;
+
+        const updated = (await res.json()) as Idea;
+
+        setIdeas((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
+        setMyIdeas((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
+
+        return updated;
+      } catch {
+        return null;
+      }
+    },
+    [authHeaders]
+  );
+
   const fetchIdeaById = useCallback(
     async (id: string): Promise<Idea | null> => {
       try {
@@ -230,11 +255,12 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       createIdea,
       updateIdea,
       deleteIdea,
+      likeIdea,
       getIdea: (id) => myIdeas.find((i) => i.id === id) ?? ideas.find((i) => i.id === id),
       fetchIdeaById,
       isOwner,
     }),
-    [ideas, myIdeas, loading, page, totalPages, totalElements, refreshAll, refreshMine, createIdea, updateIdea, deleteIdea, fetchIdeaById, isOwner]
+    [ideas, myIdeas, loading, page, totalPages, totalElements, refreshAll, refreshMine, createIdea, updateIdea, deleteIdea, likeIdea, fetchIdeaById, isOwner]
   );
 
   return <IdeasContext.Provider value={value}>{children}</IdeasContext.Provider>;

@@ -517,6 +517,85 @@ class IdeaServiceTest {
     }
 
     @Nested
+    @DisplayName("likeIdea Tests")
+    class LikeIdeaTests {
+
+        @Test
+        @DisplayName("Deve incrementar likesCount ao curtir")
+        void likeIdea_shouldIncrementLikesCount() {
+            // Arrange
+            testIdea.setLikesCount(0L);
+            Idea liked = new Idea();
+            liked.setId("test-id-123");
+            liked.setLikesCount(1L);
+            when(ideaRepository.findById("test-id-123")).thenReturn(Optional.of(testIdea));
+            when(ideaRepository.save(any(Idea.class))).thenReturn(liked);
+
+            // Act
+            Idea result = ideaService.likeIdea("test-id-123");
+
+            // Assert
+            assertNotNull(result);
+            assertEquals(1L, result.getLikesCount());
+            verify(ideaRepository, times(1)).findById("test-id-123");
+            verify(ideaRepository, times(1)).save(any(Idea.class));
+        }
+
+        @Test
+        @DisplayName("Deve salvar a ideia com contador incrementado")
+        void likeIdea_shouldSaveIdeaWithIncrementedCounter() {
+            // Arrange
+            ArgumentCaptor<Idea> ideaCaptor = ArgumentCaptor.forClass(Idea.class);
+            testIdea.setLikesCount(5L);
+            when(ideaRepository.findById("test-id-123")).thenReturn(Optional.of(testIdea));
+            when(ideaRepository.save(any(Idea.class))).thenReturn(testIdea);
+
+            // Act
+            ideaService.likeIdea("test-id-123");
+
+            // Assert
+            verify(ideaRepository).save(ideaCaptor.capture());
+            assertEquals(6L, ideaCaptor.getValue().getLikesCount());
+        }
+
+        @Test
+        @DisplayName("Deve lançar exceção quando ideia não existe")
+        void likeIdea_whenNotExists_shouldThrowException() {
+            // Arrange
+            when(ideaRepository.findById("non-existent")).thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThrows(RuntimeException.class,
+                    () -> ideaService.likeIdea("non-existent"));
+
+            verify(ideaRepository, times(1)).findById("non-existent");
+            verify(ideaRepository, never()).save(any(Idea.class));
+        }
+
+        @Test
+        @DisplayName("Deve permitir múltiplos likes (comportamento não-idempotente)")
+        void likeIdea_calledMultipleTimes_shouldAccumulateLikes() {
+            // Arrange — simula contador crescendo a cada save
+            testIdea.setLikesCount(0L);
+            when(ideaRepository.findById("test-id-123")).thenReturn(Optional.of(testIdea));
+            when(ideaRepository.save(any(Idea.class))).thenAnswer(invocation -> {
+                Idea saved = invocation.getArgument(0);
+                testIdea.setLikesCount(saved.getLikesCount());
+                return saved;
+            });
+
+            // Act
+            ideaService.likeIdea("test-id-123");
+            ideaService.likeIdea("test-id-123");
+            ideaService.likeIdea("test-id-123");
+
+            // Assert
+            assertEquals(3L, testIdea.getLikesCount());
+            verify(ideaRepository, times(3)).save(any(Idea.class));
+        }
+    }
+
+    @Nested
     @DisplayName("deleteIdeaById Tests")
     class DeleteIdeaByIdTests {
 

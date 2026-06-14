@@ -9,9 +9,11 @@ type IdeaCardProps = {
   title: string;
   description: string;
   createdAt?: string;
+  likesCount?: number;
   className?: string;
   onEdit?: () => void | Promise<void>;
   onDelete?: () => void | Promise<void>;
+  onLike?: () => void | Promise<void>;
   showActions?: boolean;
   isOwner?: boolean;
 };
@@ -21,9 +23,11 @@ export default function IdeaCard({
   title,
   description,
   createdAt,
+  likesCount = 0,
   className,
   onEdit,
   onDelete,
+  onLike,
   showActions = true,
   isOwner = false,
 }: IdeaCardProps) {
@@ -55,6 +59,16 @@ export default function IdeaCard({
           <Button variant="outline" onClick={() => navigate(`/view-idea/${id}`)}>
             Ver
           </Button>
+
+          {onLike ? (
+            <Button variant="outline" onClick={() => onLike()}>
+              👍 Curtir ({likesCount})
+            </Button>
+          ) : (
+            <span className="inline-flex items-center gap-1 self-center text-sm text-muted">
+              👍 {likesCount}
+            </span>
+          )}
 
           {showActions && isOwner && (
             <>

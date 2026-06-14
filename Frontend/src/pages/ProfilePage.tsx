@@ -10,9 +10,18 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Skeleton } from "../components/ui/skeleton";
+import { Badge } from "../components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
 
 const API_PROFILE = import.meta.env.VITE_PROFILE_API_URL || "http://localhost:8085/api";
+const API_REPUTATION = import.meta.env.VITE_REPUTATION_API_URL || "http://localhost:8084";
+
+interface Reputation {
+  userId: string;
+  xp: number;
+  level: number;
+  title: string;
+}
 
 interface Profile {
   id: string;
@@ -41,6 +50,8 @@ export default function ProfilePage() {
   const { myIdeas } = useIdeas();
 
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [reputation, setReputation] = useState<Reputation | null>(null);
+  const [reputationLoading, setReputationLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -83,6 +94,27 @@ export default function ProfilePage() {
         setError("Não foi possível carregar o perfil.");
       } finally {
         setLoading(false);
+      }
+    })();
+  }, [token]);
+
+  useEffect(() => {
+    if (!token) return;
+
+    (async () => {
+      setReputationLoading(true);
+      try {
+        const res = await apiFetch(`${API_REPUTATION}/reputation/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (res.ok) {
+          setReputation((await res.json()) as Reputation);
+        }
+      } catch {
+        // Falha ao carregar reputação não bloqueia a página de perfil.
+      } finally {
+        setReputationLoading(false);
       }
     })();
   }, [token]);
@@ -257,7 +289,16 @@ export default function ProfilePage() {
                     <>
                       <div className="flex flex-col gap-1">
                         <span className="text-xs text-muted">Nome</span>
-                        <div className="text-base font-medium">{profile?.displayName || user?.name || "—"}</div>
+                        <div className="flex items-center gap-2">
+                          <div className="text-base font-medium">{profile?.displayName || user?.name || "—"}</div>
+                          {reputationLoading ? (
+                            <Skeleton className="h-5 w-20" />
+                          ) : reputation ? (
+                            <Badge variant="secondary">
+                              {reputation.title} · Nível {reputation.level}
+                            </Badge>
+                          ) : null}
+                        </div>
                       </div>
                       {profile?.username && (
                         <div className="flex flex-col gap-1">
@@ -315,6 +356,30 @@ export default function ProfilePage() {
                   <Button className="w-full" onClick={() => navigate("/ideas")}>
                     Ver ideias
                   </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Reputação</CardTitle>
+                  <CardDescription>Pontuação na plataforma</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {reputationLoading ? (
+                    <>
+                      <Skeleton className="h-8 w-1/2" />
+                      <Skeleton className="h-4 w-2/3" />
+                    </>
+                  ) : reputation ? (
+                    <>
+                      <div className="text-3xl font-semibold">{reputation.xp} XP</div>
+                      <p className="text-xs text-muted">
+                        Nível {reputation.level} · {reputation.title}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-xs text-muted">Reputação indisponível no momento.</p>
+                  )}
                 </CardContent>
               </Card>
             </div>

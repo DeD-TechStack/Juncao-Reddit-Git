@@ -13,7 +13,7 @@ import { Skeleton } from "../components/ui/skeleton";
 export default function ViewIdeaPage() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { fetchIdeaById, isOwner } = useIdeas();
+  const { fetchIdeaById, likeIdea, isOwner } = useIdeas();
 
   const [idea, setIdea] = useState<Idea | null>(null);
   const [loading, setLoading] = useState(true);
@@ -125,6 +125,15 @@ export default function ViewIdeaPage() {
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => navigate(-1)}>
                   Voltar
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={async () => {
+                    const updated = await likeIdea(idea.id);
+                    if (updated) setIdea(updated);
+                  }}
+                >
+                  👍 Curtir ({idea.likesCount})
                 </Button>
                 {owner && (
                   <Button onClick={() => navigate(`/edit-idea/${idea.id}`)}>

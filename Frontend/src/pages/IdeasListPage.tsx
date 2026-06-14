@@ -24,6 +24,7 @@ export default function IdeasListPage() {
     page,
     totalPages,
     deleteIdea,
+    likeIdea,
     refreshAll,
     refreshMine,
     isOwner,
@@ -135,11 +136,13 @@ export default function IdeasListPage() {
                         title={idea.title}
                         description={idea.description}
                         createdAt={idea.createdAt}
+                        likesCount={idea.likesCount}
                         onEdit={() => navigate(`/edit-idea/${idea.id}`)}
                         onDelete={() => {
                           setError("");
                           setPendingDeleteId(idea.id);
                         }}
+                        onLike={() => likeIdea(idea.id)}
                         showActions
                         isOwner={isOwner(idea)}
                       />

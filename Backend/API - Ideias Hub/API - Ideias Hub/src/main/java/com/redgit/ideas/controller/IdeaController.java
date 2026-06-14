@@ -91,6 +91,13 @@ public class IdeaController {
         return ResponseEntity.ok(updated);
     }
 
+    @PostMapping("/{id}/like")
+    public ResponseEntity<Idea> likeIdea(
+            @PathVariable String id,
+            @AuthenticationPrincipal String userEmail) {
+        return ResponseEntity.ok(ideaService.likeIdea(id));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteIdea(
             @PathVariable String id,

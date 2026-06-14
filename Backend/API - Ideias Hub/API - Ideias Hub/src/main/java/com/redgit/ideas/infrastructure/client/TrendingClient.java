@@ -10,10 +10,13 @@ import org.springframework.web.client.RestClient;
 public class TrendingClient {
 
     private final RestClient restClient;
+    private final String serviceToken;
 
     public TrendingClient(RestClient.Builder restClientBuilder,
-                           @Value("${trending.api.url}") String trendingApiUrl) {
+                           @Value("${trending.api.url}") String trendingApiUrl,
+                           @Value("${internal.service.secret}") String serviceToken) {
         this.restClient = restClientBuilder.baseUrl(trendingApiUrl).build();
+        this.serviceToken = serviceToken;
     }
 
     // Nota: a API Trending identifica ideias por um ID numerico (long), enquanto a
@@ -24,6 +27,7 @@ public class TrendingClient {
             long numericId = Math.abs((long) ideaId.hashCode());
             restClient.post()
                     .uri("/trending/ideas/{ideaId}/like", numericId)
+                    .header("X-Service-Token", serviceToken)
                     .retrieve()
                     .toBodilessEntity();
         } catch (Exception e) {

@@ -13,6 +13,7 @@ import EditIdeaPage from "../pages/EditIdeaPage";
 import IdeasListPage from "../pages/IdeasListPage";
 import ViewIdeaPage from "../pages/ViewIdeaPage";
 import ProfilePage from "../pages/ProfilePage";
+import TrendingPage from "../pages/TrendingPage";
 import ErrorPage from "../pages/ErrorPage";
 
 export default function App() {
@@ -28,6 +29,7 @@ export default function App() {
 
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/ideas" element={<ProtectedRoute><IdeasListPage /></ProtectedRoute>} />
+            <Route path="/trending" element={<ProtectedRoute><TrendingPage /></ProtectedRoute>} />
             <Route path="/create-idea" element={<ProtectedRoute><CreateIdeaPage /></ProtectedRoute>} />
             <Route path="/edit-idea/:id" element={<ProtectedRoute><EditIdeaPage /></ProtectedRoute>} />
             <Route path="/view-idea/:id" element={<ProtectedRoute><ViewIdeaPage /></ProtectedRoute>} />

@@ -83,6 +83,9 @@ export default function Header({ className }: HeaderProps) {
               <NavLink to="/ideas" className={navClass}>
                 Ideias
               </NavLink>
+              <NavLink to="/trending" className={navClass}>
+                Em alta
+              </NavLink>
               <NavLink to="/profile" className={navClass}>
                 Perfil
               </NavLink>

@@ -63,6 +63,15 @@ public class IdeaService {
         return ideaRepository.save(existing);
     }
 
+    // Nota de idempotência: NÃO idempotente — múltiplos likes do mesmo usuário
+    // incrementam o contador repetidamente. Rastrear "quem curtiu" (entidade IdeaLike)
+    // está fora do escopo de TASK-R01; pode ser adicionado como task futura.
+    public Idea likeIdea(String id) {
+        Idea idea = findById(id);
+        idea.setLikesCount(idea.getLikesCount() + 1);
+        return ideaRepository.save(idea);
+    }
+
     public void deleteIdeaById(String id) {
         ideaRepository.deleteById(id);
     }

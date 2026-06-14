@@ -2,9 +2,11 @@ package com.redgit.ideas.service;
 
 import com.redgit.ideas.controller.dto.IdeaCreateDTO;
 import com.redgit.ideas.controller.dto.IdeaDTO;
+import com.redgit.ideas.infrastructure.client.TrendingClient;
 import com.redgit.ideas.infrastructure.entities.Idea;
 import com.redgit.ideas.infrastructure.repository.IdeaRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -13,11 +15,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class IdeaService {
 
     private final IdeaRepository ideaRepository;
+    private final TrendingClient trendingClient;
 
     public Idea createIdea(IdeaCreateDTO dto, String authorEmail) {
         Idea idea = new Idea();
@@ -69,7 +73,15 @@ public class IdeaService {
     public Idea likeIdea(String id) {
         Idea idea = findById(id);
         idea.setLikesCount(idea.getLikesCount() + 1);
-        return ideaRepository.save(idea);
+        Idea saved = ideaRepository.save(idea);
+
+        try {
+            trendingClient.notifyLike(saved.getId());
+        } catch (Exception e) {
+            log.warn("Falha ao notificar like ao servico Trending para ideaId={}", saved.getId(), e);
+        }
+
+        return saved;
     }
 
     public void deleteIdeaById(String id) {

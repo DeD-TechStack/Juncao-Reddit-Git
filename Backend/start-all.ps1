@@ -3,12 +3,33 @@
 # Pre-requisitos:
 #   - Java 21 e Maven no PATH
 #   - Redis rodando: docker compose up -d (na raiz do projeto)
-#   - Variaveis de ambiente definidas na sessao ou no sistema:
+#   - Variaveis de ambiente definidas na sessao, no sistema, ou em Backend\.env:
 #       JWT_SECRET, INTERNAL_SERVICE_SECRET
 #
 # Uso: .\start-all.ps1
 
 $BackendDir = $PSScriptRoot
+
+# Carrega Backend\.env, se existir, definindo variaveis que ainda nao estejam presentes
+# na sessao atual (variaveis ja definidas via $env: continuam tendo prioridade)
+$envFile = Join-Path $BackendDir ".env"
+if (Test-Path $envFile) {
+    foreach ($line in Get-Content $envFile) {
+        $trimmed = $line.Trim()
+        if ($trimmed -eq "" -or $trimmed.StartsWith("#")) {
+            continue
+        }
+        $parts = $trimmed -split "=", 2
+        if ($parts.Count -ne 2) {
+            continue
+        }
+        $name  = $parts[0].Trim()
+        $value = $parts[1].Trim().Trim("'", '"')
+        if ([string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable($name)) -and -not [string]::IsNullOrEmpty($value)) {
+            [Environment]::SetEnvironmentVariable($name, $value)
+        }
+    }
+}
 
 # Valida variaveis de ambiente obrigatorias antes de iniciar qualquer servico
 $requiredEnvVars = @("JWT_SECRET", "INTERNAL_SERVICE_SECRET")

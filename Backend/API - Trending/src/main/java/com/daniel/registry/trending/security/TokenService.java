@@ -16,7 +16,7 @@ public class TokenService {
     @PostConstruct
     private void validateSecret() {
         if (secret == null || secret.isBlank() || secret.length() < 32)
-            throw new IllegalStateException("SECURITY_JWT_SECRET_KEY não configurado ou inválido. Defina a variável com no mínimo 32 caracteres.");
+            throw new IllegalStateException("JWT_SECRET não configurado ou inválido. Defina a variável com no mínimo 32 caracteres.");
     }
 
     public String validateToken(String token) {

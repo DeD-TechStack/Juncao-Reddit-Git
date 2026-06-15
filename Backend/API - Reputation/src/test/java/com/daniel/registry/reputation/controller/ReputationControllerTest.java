@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -61,7 +62,7 @@ class ReputationControllerTest {
         mvc.perform(get("/reputation/me")
                         .principal(principalEmail("daniel@email.com")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userEmail").value("daniel@email.com"))
+                .andExpect(jsonPath("$.userId").value("daniel@email.com"))
                 .andExpect(jsonPath("$.xp").value(120))
                 .andExpect(jsonPath("$.level").value(2))
                 .andExpect(jsonPath("$.title").value("Criador Promissor"));
@@ -72,8 +73,10 @@ class ReputationControllerTest {
         when(reputationService.applyEvent("daniel@email.com", ReputationEventType.LIKE_GAINED))
                 .thenReturn(new ReputationEventResponseDTO("LIKE_GAINED", 10, 10, 1, "Inovador Iniciante"));
 
-        mvc.perform(post("/reputation/events/LIKE_GAINED")
-                        .principal(principalEmail("daniel@email.com")))
+        mvc.perform(post("/reputation/events")
+                        .principal(principalEmail("daniel@email.com"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"type\":\"LIKE_GAINED\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.eventType").value("LIKE_GAINED"))
                 .andExpect(jsonPath("$.gainedXp").value(10))

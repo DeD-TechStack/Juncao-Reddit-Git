@@ -46,10 +46,8 @@ $services = @(
     [PSCustomObject]@{ Name = "Cadastro e Login"; Path = "API - Cadastro e Login\API - Cadastro e Login"; Port = 8081 }
     [PSCustomObject]@{ Name = "Ideias Hub";       Path = "API - Ideias Hub\API - Ideias Hub";             Port = 8082 }
     [PSCustomObject]@{ Name = "Profile";          Path = "API - Profile";                                 Port = 8083 }
-
-    # Servicos orfaos - descomentar apos decisao em TASK-03:
-    # [PSCustomObject]@{ Name = "Reputation"; Path = "API - Reputation"; Port = 8084 }
-    # [PSCustomObject]@{ Name = "Trending";   Path = "API - Trending";   Port = 8085 }
+    [PSCustomObject]@{ Name = "Reputation";       Path = "API - Reputation";                              Port = 8084 }
+    [PSCustomObject]@{ Name = "Trending";         Path = "API - Trending";                                Port = 8085 }
 )
 
 foreach ($svc in $services) {
@@ -71,3 +69,5 @@ Write-Host "Servicos iniciados:" -ForegroundColor Green
 Write-Host "  Cadastro e Login  -> http://localhost:8081"
 Write-Host "  Ideias Hub        -> http://localhost:8082"
 Write-Host "  Profile           -> http://localhost:8083"
+Write-Host "  Reputation        -> http://localhost:8084"
+Write-Host "  Trending          -> http://localhost:8085"

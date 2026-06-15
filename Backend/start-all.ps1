@@ -43,7 +43,7 @@ Start-Sleep -Seconds 2
 
 # Servicos ativos no fluxo principal
 $services = @(
-    [PSCustomObject]@{ Name = "Cadastro e Login"; Path = "API - Cadastro e Login";                        Port = 8081 }
+    [PSCustomObject]@{ Name = "Auth";             Path = "API - Auth";                                    Port = 8081 }
     [PSCustomObject]@{ Name = "Ideias Hub";       Path = "API - Ideias Hub";                              Port = 8082 }
     [PSCustomObject]@{ Name = "Profile";          Path = "API - Profile";                                 Port = 8083 }
     [PSCustomObject]@{ Name = "Reputation";       Path = "API - Reputation";                              Port = 8084 }
@@ -66,7 +66,7 @@ foreach ($svc in $services) {
 
 Write-Host ""
 Write-Host "Servicos iniciados:" -ForegroundColor Green
-Write-Host "  Cadastro e Login  -> http://localhost:8081"
+Write-Host "  Auth              -> http://localhost:8081"
 Write-Host "  Ideias Hub        -> http://localhost:8082"
 Write-Host "  Profile           -> http://localhost:8083"
 Write-Host "  Reputation        -> http://localhost:8084"

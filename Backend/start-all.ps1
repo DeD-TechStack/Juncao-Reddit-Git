@@ -3,11 +3,38 @@
 # Pre-requisitos:
 #   - Java 21 e Maven no PATH
 #   - Redis rodando: docker compose up -d (na raiz do projeto)
-#   - Variavel de ambiente JWT_SECRET definida na sessao ou no sistema
+#   - Variaveis de ambiente definidas na sessao ou no sistema:
+#       JWT_SECRET, SECURITY_JWT_SECRET_KEY, INTERNAL_SERVICE_SECRET
 #
 # Uso: .\start-all.ps1
 
 $BackendDir = $PSScriptRoot
+
+# Valida variaveis de ambiente obrigatorias antes de iniciar qualquer servico
+$requiredEnvVars = @("JWT_SECRET", "SECURITY_JWT_SECRET_KEY", "INTERNAL_SERVICE_SECRET")
+$missingEnvVars = @()
+
+foreach ($varName in $requiredEnvVars) {
+    $value = [Environment]::GetEnvironmentVariable($varName)
+    if ([string]::IsNullOrEmpty($value)) {
+        $missingEnvVars += $varName
+    }
+}
+
+if ($missingEnvVars.Count -gt 0) {
+    Write-Host "Erro: variaveis de ambiente obrigatorias nao definidas:" -ForegroundColor Red
+    foreach ($varName in $missingEnvVars) {
+        Write-Host "  - $varName" -ForegroundColor Red
+    }
+    Write-Host ""
+    Write-Host "Defina cada variavel na sessao atual antes de executar este script. Exemplo:" -ForegroundColor Yellow
+    foreach ($varName in $missingEnvVars) {
+        Write-Host "  `$env:$varName = 'valor-do-segredo'"
+    }
+    Write-Host ""
+    Write-Host "Nenhum servico foi iniciado." -ForegroundColor Red
+    exit 1
+}
 
 # Encerra processos Java existentes para evitar conflito de porta
 Write-Host "Encerrando processos Java existentes..." -ForegroundColor Yellow

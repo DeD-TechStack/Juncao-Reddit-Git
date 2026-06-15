@@ -1,6 +1,7 @@
 package com.daniel.registry.trending.controller;
 
 import com.daniel.registry.trending.dto.TrendingItemDTO;
+import com.daniel.registry.trending.dto.TrendingResponseDTO;
 import com.daniel.registry.trending.security.TokenService;
 import com.daniel.registry.trending.service.TrendingService;
 import org.junit.jupiter.api.Test;
@@ -61,18 +62,18 @@ class TrendingControllerTest {
     @Test
     void get_daily_semDate_deveRetornarLista() throws Exception {
         given(trendingService.topDaily(any(LocalDate.class), eq(10)))
-                .willReturn(List.of(
+                .willReturn(new TrendingResponseDTO("daily", "chave-teste", List.of(
                         new TrendingItemDTO(1L, 10.0),
                         new TrendingItemDTO(2L, 7.5)
-                ));
+                )));
 
         mvc.perform(get("/trending/daily"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].ideaId").value(1))
-                .andExpect(jsonPath("$[0].score").value(10.0))
-                .andExpect(jsonPath("$[1].ideaId").value(2))
-                .andExpect(jsonPath("$[1].score").value(7.5));
+                .andExpect(jsonPath("$.items[0].ideaId").value(1))
+                .andExpect(jsonPath("$.items[0].score").value(10.0))
+                .andExpect(jsonPath("$.items[1].ideaId").value(2))
+                .andExpect(jsonPath("$.items[1].score").value(7.5));
 
         verify(trendingService).topDaily(any(LocalDate.class), eq(10));
         verifyNoMoreInteractions(trendingService);
@@ -81,15 +82,15 @@ class TrendingControllerTest {
     @Test
     void get_weekly_semDate_deveRetornarLista() throws Exception {
         given(trendingService.topWeekly(any(LocalDate.class), eq(10)))
-                .willReturn(List.of(
+                .willReturn(new TrendingResponseDTO("weekly", "chave-teste", List.of(
                         new TrendingItemDTO(5L, 20.0)
-                ));
+                )));
 
         mvc.perform(get("/trending/weekly"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].ideaId").value(5))
-                .andExpect(jsonPath("$[0].score").value(20.0));
+                .andExpect(jsonPath("$.items[0].ideaId").value(5))
+                .andExpect(jsonPath("$.items[0].score").value(20.0));
 
         verify(trendingService).topWeekly(any(LocalDate.class), eq(10));
         verifyNoMoreInteractions(trendingService);

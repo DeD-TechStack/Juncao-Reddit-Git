@@ -14,7 +14,7 @@ Este projeto é um **laboratório de estudos** onde as técnicas e as melhores p
 
 A branch `main` integra os seguintes módulos de backend, cada um focado em uma responsabilidade específica:
 
-### 1. API - Cadastro e Login (Autenticação)
+### 1. API - Auth (Autenticação)
 
 *   **Tecnologia Principal:** Spring Boot, Spring Security, JWT, Redis.
 *   **Banco de Dados:** MySQL (configurado via JPA).
@@ -59,7 +59,7 @@ O desenvolvimento futuro do projeto Junção Reddit/Git está focado em:
 
 Devido à arquitetura de microsserviços, cada API possui sua própria configuração de ambiente e deve ser executada separadamente.
 
-### 1. API - Cadastro e Login
+### 1. API - Auth
 
 *   **Porta:** `8081`
 *   **Banco de Dados:** MySQL
@@ -238,7 +238,7 @@ mongodb.databaseName=ideas-db
 
 2.  **Navegue para o diretório do módulo desejado:**
 
-    *   Para Autenticação: `cd "API - Cadastro e Login"`
+    *   Para Autenticação: `cd "API - Auth"`
     *   Para Ideias Hub: `cd "API - Ideias Hub"`
     *   Para Perfil: `cd "API - Profile"`
 

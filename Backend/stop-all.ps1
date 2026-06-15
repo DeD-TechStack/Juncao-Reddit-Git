@@ -9,6 +9,7 @@
 $ports = @(8081, 8082, 8083, 8084, 8085)
 
 $stopped = 0
+$stoppedPids = @{}
 
 foreach ($port in $ports) {
     $netstatLines = netstat -ano | Where-Object { $_ -match "TCP\s+\S+:$port\s+\S+\s+LISTENING" }
@@ -17,11 +18,12 @@ foreach ($port in $ports) {
         $parts = $line.Trim() -split '\s+'
         $procId = $parts[-1]
 
-        if ($procId -match '^\d+$') {
+        if ($procId -match '^\d+$' -and -not $stoppedPids.ContainsKey($procId)) {
             $proc = Get-Process -Id $procId -ErrorAction SilentlyContinue
             if ($proc -and $proc.ProcessName -eq "java") {
                 Write-Host "Encerrando $($proc.ProcessName) na porta $port (PID $procId)..." -ForegroundColor Yellow
                 Stop-Process -Id $procId -Force
+                $stoppedPids[$procId] = $true
                 $stopped++
             }
         }

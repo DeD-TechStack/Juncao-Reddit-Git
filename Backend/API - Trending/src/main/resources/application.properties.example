@@ -4,8 +4,8 @@ spring.application.name=trending-service
 spring.data.redis.host=localhost
 spring.data.redis.port=6379
 
-# Security — defina SECURITY_JWT_SECRET_KEY com no mínimo 32 caracteres
-security.jwt.secret-key=${SECURITY_JWT_SECRET_KEY}
+# Security — defina JWT_SECRET com no mínimo 32 caracteres
+security.jwt.secret-key=${JWT_SECRET}
 
 # Service-to-service token — defina INTERNAL_SERVICE_SECRET com no mínimo 32 caracteres
 internal.service.secret=${INTERNAL_SERVICE_SECRET}

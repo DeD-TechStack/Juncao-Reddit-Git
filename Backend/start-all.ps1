@@ -43,8 +43,8 @@ Start-Sleep -Seconds 2
 
 # Servicos ativos no fluxo principal
 $services = @(
-    [PSCustomObject]@{ Name = "Cadastro e Login"; Path = "API - Cadastro e Login\API - Cadastro e Login"; Port = 8081 }
-    [PSCustomObject]@{ Name = "Ideias Hub";       Path = "API - Ideias Hub\API - Ideias Hub";             Port = 8082 }
+    [PSCustomObject]@{ Name = "Cadastro e Login"; Path = "API - Cadastro e Login";                        Port = 8081 }
+    [PSCustomObject]@{ Name = "Ideias Hub";       Path = "API - Ideias Hub";                              Port = 8082 }
     [PSCustomObject]@{ Name = "Profile";          Path = "API - Profile";                                 Port = 8083 }
     [PSCustomObject]@{ Name = "Reputation";       Path = "API - Reputation";                              Port = 8084 }
     [PSCustomObject]@{ Name = "Trending";         Path = "API - Trending";                                Port = 8085 }

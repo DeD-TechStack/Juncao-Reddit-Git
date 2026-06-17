@@ -43,5 +43,21 @@ public class ReputationClient {
         }
     }
 
+    public void notifyContributionAccepted(String contributorId, String contributionId) {
+        try {
+            String serviceJwt = tokenService.generateServiceToken(contributorId);
+            restClient.post()
+                    .uri("/reputation/events")
+                    .header("Authorization", "Bearer " + serviceJwt)
+                    .header("X-Service-Token", serviceToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(new ReputationEventRequest("CONTRIBUTION_ACCEPTED", contributionId))
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (Exception e) {
+            log.warn("Falha ao notificar evento de reputacao para contributorId={}", contributorId, e);
+        }
+    }
+
     private record ReputationEventRequest(String type, String referenceId) {}
 }

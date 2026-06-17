@@ -26,6 +26,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -194,9 +195,9 @@ class ContributionServiceTest {
             contributionService.accept("contrib-1", "author@test.com");
 
             verify(reputationClient, times(1))
-                    .notifyContributionAccepted("contributor@test.com", "contrib-1");
+                    .notifyContributionAccepted(eq("contributor@test.com"), eq("contrib-1"));
             verify(reputationClient, never())
-                    .notifyContributionAccepted("author@test.com", any());
+                    .notifyContributionAccepted(eq("author@test.com"), any());
         }
 
         @Test

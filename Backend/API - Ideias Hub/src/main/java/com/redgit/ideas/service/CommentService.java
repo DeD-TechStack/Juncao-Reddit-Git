@@ -28,8 +28,8 @@ public class CommentService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ideia não encontrada: " + ideaId);
         }
 
-        String parentId = dto.parentId();
-        if (parentId != null && !parentId.isBlank()) {
+        String parentId = (dto.parentId() != null && !dto.parentId().isBlank()) ? dto.parentId() : null;
+        if (parentId != null) {
             Comment parent = commentRepository.findById(parentId)
                     .orElseThrow(() -> new ResponseStatusException(
                             HttpStatus.NOT_FOUND, "Comentário pai não encontrado: " + parentId));
@@ -37,8 +37,6 @@ public class CommentService {
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST, "Comentário pai pertence a outra ideia");
             }
-        } else {
-            parentId = null;
         }
 
         Comment comment = new Comment();

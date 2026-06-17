@@ -9,6 +9,7 @@ import com.redgit.ideas.infrastructure.entities.Idea;
 import com.redgit.ideas.infrastructure.repository.ContributionRepository;
 import com.redgit.ideas.infrastructure.repository.IdeaRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ContributionService {
@@ -23,11 +25,12 @@ public class ContributionService {
     private final ContributionRepository contributionRepository;
     private final IdeaRepository ideaRepository;
     private final ReputationClient reputationClient;
+    private final NotificationService notificationService;
 
     public Contribution submit(String ideaId, String contributorId, ContributionCreateDTO dto) {
-        if (!ideaRepository.existsById(ideaId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ideia não encontrada: " + ideaId);
-        }
+        Idea idea = ideaRepository.findById(ideaId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Ideia não encontrada: " + ideaId));
 
         Contribution contribution = new Contribution();
         contribution.setIdeaId(ideaId);
@@ -36,7 +39,18 @@ public class ContributionService {
         contribution.setStatus(ContributionStatus.PENDING);
         contribution.setCreatedAt(LocalDateTime.now());
 
-        return contributionRepository.save(contribution);
+        Contribution saved = contributionRepository.save(contribution);
+
+        if (!contributorId.equals(idea.getAuthorId())) {
+            try {
+                notificationService.createContributionSubmittedNotification(
+                        idea.getAuthorId(), contributorId, saved.getId(), ideaId);
+            } catch (Exception e) {
+                log.warn("Falha ao criar notificação para contribuição id={}", saved.getId(), e);
+            }
+        }
+
+        return saved;
     }
 
     public List<ContributionDTO> listByIdea(String ideaId) {

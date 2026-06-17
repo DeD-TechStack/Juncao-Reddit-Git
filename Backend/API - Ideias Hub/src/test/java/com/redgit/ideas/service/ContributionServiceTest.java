@@ -42,6 +42,9 @@ class ContributionServiceTest {
     @Mock
     private ReputationClient reputationClient;
 
+    @Mock
+    private NotificationService notificationService;
+
     @InjectMocks
     private ContributionService contributionService;
 
@@ -73,7 +76,7 @@ class ContributionServiceTest {
         @Test
         @DisplayName("Deve criar contribuição PENDING para ideia existente")
         void submit_existingIdea_shouldReturnPendingContribution() {
-            when(ideaRepository.existsById("idea-1")).thenReturn(true);
+            when(ideaRepository.findById("idea-1")).thenReturn(Optional.of(idea));
             when(contributionRepository.save(any(Contribution.class))).thenReturn(pendingContribution);
 
             ContributionCreateDTO dto = new ContributionCreateDTO("+ new line\n- old line");
@@ -87,7 +90,7 @@ class ContributionServiceTest {
         @Test
         @DisplayName("Deve rejeitar submissão quando ideia não existe")
         void submit_ideaNotFound_shouldThrow404() {
-            when(ideaRepository.existsById("non-existent")).thenReturn(false);
+            when(ideaRepository.findById("non-existent")).thenReturn(Optional.empty());
 
             ContributionCreateDTO dto = new ContributionCreateDTO("diff text");
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
@@ -100,7 +103,7 @@ class ContributionServiceTest {
         @Test
         @DisplayName("Deve armazenar o usuário autenticado como contributorId")
         void submit_shouldStoreAuthenticatedUserAsContributorId() {
-            when(ideaRepository.existsById("idea-1")).thenReturn(true);
+            when(ideaRepository.findById("idea-1")).thenReturn(Optional.of(idea));
             ArgumentCaptor<Contribution> captor = ArgumentCaptor.forClass(Contribution.class);
             when(contributionRepository.save(captor.capture())).thenReturn(pendingContribution);
 
@@ -113,7 +116,7 @@ class ContributionServiceTest {
         @Test
         @DisplayName("Deve salvar contribuição com status PENDING")
         void submit_shouldSaveWithPendingStatus() {
-            when(ideaRepository.existsById("idea-1")).thenReturn(true);
+            when(ideaRepository.findById("idea-1")).thenReturn(Optional.of(idea));
             ArgumentCaptor<Contribution> captor = ArgumentCaptor.forClass(Contribution.class);
             when(contributionRepository.save(captor.capture())).thenReturn(pendingContribution);
 
@@ -124,6 +127,32 @@ class ContributionServiceTest {
             assertEquals("+ added line", captor.getValue().getDiff());
             assertEquals("idea-1", captor.getValue().getIdeaId());
             assertNotNull(captor.getValue().getCreatedAt());
+        }
+
+        @Test
+        @DisplayName("Deve criar notificação para o autor da ideia ao submeter contribuição")
+        void submit_shouldCreateNotificationForIdeaAuthor() {
+            when(ideaRepository.findById("idea-1")).thenReturn(Optional.of(idea));
+            when(contributionRepository.save(any(Contribution.class))).thenReturn(pendingContribution);
+
+            ContributionCreateDTO dto = new ContributionCreateDTO("diff");
+            contributionService.submit("idea-1", "contributor@test.com", dto);
+
+            verify(notificationService, times(1)).createContributionSubmittedNotification(
+                    eq("author@test.com"), eq("contributor@test.com"), eq("contrib-1"), eq("idea-1"));
+        }
+
+        @Test
+        @DisplayName("Não deve criar notificação quando o autor submete à própria ideia")
+        void submit_selfSubmission_shouldNotCreateNotification() {
+            when(ideaRepository.findById("idea-1")).thenReturn(Optional.of(idea));
+            when(contributionRepository.save(any(Contribution.class))).thenReturn(pendingContribution);
+
+            ContributionCreateDTO dto = new ContributionCreateDTO("diff");
+            contributionService.submit("idea-1", "author@test.com", dto);
+
+            verify(notificationService, never()).createContributionSubmittedNotification(
+                    any(), any(), any(), any());
         }
     }
 

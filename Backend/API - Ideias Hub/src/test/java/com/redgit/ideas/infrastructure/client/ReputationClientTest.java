@@ -65,4 +65,30 @@ class ReputationClientTest {
 
         mockServer.verify();
     }
+
+    @Test
+    @DisplayName("Deve chamar o endpoint de eventos com contributorId ao aceitar contribuição")
+    void notifyContributionAccepted_happyPath_shouldCallReputationEndpoint() {
+        mockServer.expect(requestTo("http://localhost:8084/reputation/events"))
+                .andExpect(method(POST))
+                .andExpect(header("X-Service-Token", SERVICE_TOKEN))
+                .andExpect(header("Authorization", org.hamcrest.Matchers.startsWith("Bearer ")))
+                .andRespond(withStatus(HttpStatus.NO_CONTENT));
+
+        reputationClient.notifyContributionAccepted("contributor@test.com", "contrib-id-1");
+
+        mockServer.verify();
+    }
+
+    @Test
+    @DisplayName("Nao deve lancar exceção quando Reputation falha ao aceitar contribuição")
+    void notifyContributionAccepted_whenReputationFails_shouldNotThrow() {
+        mockServer.expect(requestTo("http://localhost:8084/reputation/events"))
+                .andExpect(method(POST))
+                .andRespond(withServerError());
+
+        reputationClient.notifyContributionAccepted("contributor@test.com", "contrib-id-1");
+
+        mockServer.verify();
+    }
 }
